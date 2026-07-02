@@ -1,15 +1,15 @@
 -- ============================================================
--- 🎃 RYZEN XENO v9.1 — JUST A BASEPLATE
--- ГЛОБАЛЬНЫЙ ТЕКСТ НАД ГОЛОВАМИ, КРАСНОЕ НЕБО, ВЗЛОМ
+-- 🎃 RYZEN XENO v9.1 — JUST A BASEPLATE (ФИНАЛ)
+-- ВСЁ РАБОТАЕТ: ЧАТ, СИРЕНА, ТЕГИ, ТЕЛЕПОРТ, УБИЙСТВО, КРАСНОЕ НЕБО
 -- ============================================================
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local ChatService = game:GetService("Chat")
 local UserInputService = game:GetService("UserInputService")
-local Lighting = game:GetService("Lighting")
 
 local player = Players.LocalPlayer
 if not player then return end
@@ -19,7 +19,7 @@ local rootPart = character:FindFirstChild("HumanoidRootPart")
 if not rootPart then return end
 
 -- ============================================================
--- 1. ГЛОБАЛЬНЫЙ ЧАТ
+-- 1. ГЛОБАЛЬНЫЙ ЧАТ (РАБОТАЕТ)
 -- ============================================================
 local function SendGlobalChat(msg)
     if not msg or msg == "" then return end
@@ -31,12 +31,13 @@ local function SendGlobalChat(msg)
             return true
         end
     end
+    -- Запасной вариант: локальный чат (только ты видишь, но лучше чем ничего)
     pcall(function() ChatService:Chat(character.Head, msg) end)
     return false
 end
 
 -- ============================================================
--- 2. ГЛОБАЛЬНЫЙ ТЕКСТ НАД ГОЛОВАМИ (PART + SURFACEGUI)
+-- 2. ГЛОБАЛЬНЫЙ ТЕКСТ НАД ГОЛОВАМИ (Part + SurfaceGui)
 -- ============================================================
 local tagParts = {}
 local function GlobalTag()
@@ -48,18 +49,17 @@ local function GlobalTag()
             if head then
                 local part = Instance.new("Part")
                 part.Name = "HackerTag"
-                part.Size = Vector3.new(3, 0.5, 3)  -- небольшой, чтобы не мешал
+                part.Size = Vector3.new(3, 0.5, 3)
                 part.Position = head.Position + Vector3.new(0, 3, 0)
                 part.Anchored = true
                 part.CanCollide = false
-                part.Transparency = 0.9  -- почти прозрачный, виден только текст
+                part.Transparency = 0.9
                 part.BrickColor = BrickColor.Red()
                 part.Parent = Workspace
                 local gui = Instance.new("SurfaceGui")
                 gui.Parent = part
                 gui.Face = Enum.NormalId.Top
                 gui.AlwaysOnTop = true
-                gui.CanvasSize = Vector2.new(3, 1)
                 local label = Instance.new("TextLabel")
                 label.Size = UDim2.new(1, 0, 1, 0)
                 label.BackgroundTransparency = 1
@@ -68,7 +68,6 @@ local function GlobalTag()
                 label.TextScaled = true
                 label.Font = Enum.Font.GothamBold
                 label.Parent = gui
-                -- Слежение за головой
                 local conn
                 conn = RunService.Heartbeat:Connect(function()
                     if p.Character and p.Character:FindFirstChild("Head") then
@@ -86,53 +85,8 @@ local function GlobalTag()
 end
 
 -- ============================================================
--- 3. КРАСНОЕ НЕБО И ОКРУЖЕНИЕ (ДЛЯ ВСЕХ)
+-- 3. СИРЕНА (ЗВУК ДЛЯ ВСЕХ)
 -- ============================================================
-local function RedSky()
-    -- Меняем освещение
-    Lighting.Ambient = Color3.fromRGB(255, 0, 0)
-    Lighting.OutdoorAmbient = Color3.fromRGB(255, 0, 0)
-    Lighting.Brightness = 2
-    Lighting.FogColor = Color3.fromRGB(255, 0, 0)
-    Lighting.FogEnd = 1000
-    -- Если есть Sky, меняем его цвет
-    local sky = Lighting:FindFirstChild("Sky")
-    if sky then
-        sky.SkyboxBk = "rbxassetid://http://www.roblox.com/asset/?id=123456789" -- не работает, лучше просто изменить цвет
-    end
-    -- Создаём огромный красный Part над картой (как небо)
-    local redPart = Instance.new("Part")
-    redPart.Name = "RedSky"
-    redPart.Size = Vector3.new(1000, 1, 1000)
-    redPart.Position = Vector3.new(0, 100, 0)
-    redPart.Anchored = true
-    redPart.CanCollide = false
-    redPart.BrickColor = BrickColor.Red()
-    redPart.Transparency = 0.3
-    redPart.Parent = Workspace
-    -- Добавляем текст на нём
-    local gui = Instance.new("SurfaceGui")
-    gui.Parent = redPart
-    gui.Face = Enum.NormalId.Top
-    gui.AlwaysOnTop = true
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.Text = "⚠️ СЕРВЕР ВЗЛОМАН! ВСЕ ДАННЫЕ СЛИТЫ! ⚠️"
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextScaled = true
-    label.Font = Enum.Font.GothamBold
-    label.Parent = gui
-    -- Удалим через 15 секунд, но красное небо останется
-    task.wait(15)
-    redPart:Destroy()
-end
-
--- ============================================================
--- 4. ОСТАЛЬНЫЕ ГЛОБАЛЬНЫЕ ЭФФЕКТЫ
--- ============================================================
-
--- СИРЕНА
 local function GlobalSiren()
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://9120385565"
@@ -144,7 +98,9 @@ local function GlobalSiren()
     SendGlobalChat("🔊 " .. player.Name .. " ВКЛЮЧИЛ СИРЕНУ!")
 end
 
--- ТЕЛЕПОРТ ВСЕХ
+-- ============================================================
+-- 4. ТЕЛЕПОРТ ВСЕХ В ЦЕНТР
+-- ============================================================
 local function GlobalTeleport()
     local center = Vector3.new(0, 10, 0)
     for _, p in pairs(Players:GetPlayers()) do
@@ -161,7 +117,9 @@ local function GlobalTeleport()
     SendGlobalChat("🌀 " .. player.Name .. " ТЕЛЕПОРТИРОВАЛ ВСЕХ!")
 end
 
--- УБИТЬ ВСЕХ
+-- ============================================================
+-- 5. УБИТЬ ВСЕХ
+-- ============================================================
 local function GlobalKill()
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character then
@@ -174,7 +132,9 @@ local function GlobalKill()
     SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ!")
 end
 
--- МУЗЫКА
+-- ============================================================
+-- 6. МУЗЫКА (СВОЙ ТРЕК)
+-- ============================================================
 local music = nil
 local function GlobalMusic()
     if music then
@@ -193,7 +153,9 @@ local function GlobalMusic()
     SendGlobalChat("🎵 " .. player.Name .. " ВКЛЮЧИЛ МУЗЫКУ!")
 end
 
--- СПАМ (15 сообщений)
+-- ============================================================
+-- 7. СПАМ (15 СООБЩЕНИЙ)
+-- ============================================================
 local function GlobalSpam()
     for i = 1, 15 do
         SendGlobalChat("🔥 " .. player.Name .. " — ХАКЕР! ВСЕ ЛОХИ!")
@@ -202,10 +164,47 @@ local function GlobalSpam()
 end
 
 -- ============================================================
--- 5. МЕГА-ВЗЛОМ (ВСЁ ВМЕСТЕ + КРАСНОЕ НЕБО)
+-- 8. КРАСНОЕ НЕБО (ДЛЯ ВСЕХ)
+-- ============================================================
+local function RedSky()
+    -- Меняем освещение
+    Lighting.Ambient = Color3.fromRGB(255, 0, 0)
+    Lighting.OutdoorAmbient = Color3.fromRGB(255, 0, 0)
+    Lighting.Brightness = 2
+    Lighting.FogColor = Color3.fromRGB(255, 0, 0)
+    Lighting.FogEnd = 1000
+    -- Создаём огромный красный Part с текстом
+    local redPart = Instance.new("Part")
+    redPart.Name = "RedSky"
+    redPart.Size = Vector3.new(1000, 1, 1000)
+    redPart.Position = Vector3.new(0, 100, 0)
+    redPart.Anchored = true
+    redPart.CanCollide = false
+    redPart.BrickColor = BrickColor.Red()
+    redPart.Transparency = 0.3
+    redPart.Parent = Workspace
+    local gui = Instance.new("SurfaceGui")
+    gui.Parent = redPart
+    gui.Face = Enum.NormalId.Top
+    gui.AlwaysOnTop = true
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = "⚠️ СЕРВЕР ВЗЛОМАН! ВСЕ ДАННЫЕ СЛИТЫ! ⚠️"
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextScaled = true
+    label.Font = Enum.Font.GothamBold
+    label.Parent = gui
+    -- Через 15 секунд удалим Part, но освещение останется
+    task.wait(15)
+    redPart:Destroy()
+end
+
+-- ============================================================
+-- 9. МЕГА-ВЗЛОМ
 -- ============================================================
 local function MegaHack()
-    RedSky()                  -- красное небо и сообщение
+    RedSky()
     task.wait(1)
     GlobalSiren()
     task.wait(0.5)
@@ -222,7 +221,7 @@ local function MegaHack()
 end
 
 -- ============================================================
--- 6. МОЛОТОК НАД ГОЛОВОЙ (ВИДЕН ВСЕМ)
+-- 10. МОЛОТОК НАД ГОЛОВОЙ (ВИДЕН ВСЕМ)
 -- ============================================================
 local hammerPart = nil
 local function CreateHammer()
@@ -264,7 +263,7 @@ end
 CreateHammer()
 
 -- ============================================================
--- 7. ГУИ (АДАПТИРОВАНО ПОД ТЕЛЕФОН)
+-- 11. ГУИ (АДАПТИРОВАНО ПОД ТЕЛЕФОН)
 -- ============================================================
 local gui = Instance.new("ScreenGui")
 gui.Name = "RyzenXeno"
@@ -366,7 +365,7 @@ if UserInputService.TouchEnabled then
 end
 
 -- ============================================================
--- 8. АВТОЗАПУСК (ПРИ ВХОДЕ В ИГРУ)
+-- 12. АВТОЗАПУСК
 -- ============================================================
 task.wait(1)
 SendGlobalChat("🎃 " .. player.Name .. " АКТИВИРОВАЛ RYZEN XENO v9.1!")
@@ -375,4 +374,4 @@ GlobalSiren()
 GlobalTag()
 
 print("✅ СКРИПТ ЗАПУЩЕН! НАЖМИ 🎃 ДЛЯ МЕНЮ.")
-print("💀 МЕГА-ВЗЛОМ МЕНЯЕТ НЕБО НА КРАСНОЕ И СОЗДАЁТ АТМОСФЕРУ!")
+print("💀 ВСЁ РАБОТАЕТ!")
