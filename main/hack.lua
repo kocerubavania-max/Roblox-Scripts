@@ -6,8 +6,9 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
-local ChatService = game:GetService("Chat")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local ChatService = game:GetService("Chat")
 
 local player = Players.LocalPlayer
 if not player then return end
@@ -17,12 +18,12 @@ local rootPart = character:FindFirstChild("HumanoidRootPart")
 if not rootPart then return end
 
 -- ============================================================
--- 1. ФУНКЦИЯ ЧАТА (РАБОТАЕТ ДЛЯ ВСЕХ)
+-- 1. ФУНКЦИЯ ОТПРАВКИ В ЧАТ (ДЛЯ ВСЕХ)
 -- ============================================================
 local function SendGlobalChat(msg)
     if not msg or msg == "" then return end
     
-    -- Способ 1: Стандартный чат Roblox
+    -- Способ 1: стандартный чат
     local chatEvent = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
     if chatEvent then
         local say = chatEvent:FindFirstChild("SayMessageRequest")
@@ -32,7 +33,7 @@ local function SendGlobalChat(msg)
         end
     end
     
-    -- Способ 2: Любой RemoteEvent с именем, содержащим "Chat"
+    -- Способ 2: любой RemoteEvent с именем "Chat"
     for _, obj in pairs(ReplicatedStorage:GetDescendants()) do
         if obj:IsA("RemoteEvent") and obj.Name:lower():find("chat") then
             pcall(function() obj:FireServer(msg) end)
@@ -40,7 +41,7 @@ local function SendGlobalChat(msg)
         end
     end
     
-    -- Способ 3: Локальный чат (только для себя, как запасной)
+    -- Способ 3: локальный чат (как запасной)
     pcall(function() ChatService:Chat(character.Head, msg) end)
     return false
 end
@@ -58,32 +59,34 @@ local function GlobalSiren()
     pcall(function() sound:Play() end)
     task.wait(5)
     sound:Destroy()
-    SendGlobalChat("🔊 " .. player.Name .. " ВКЛЮЧИЛ СИРЕНУ ДЛЯ ВСЕХ!")
+    SendGlobalChat("🔊 " .. player.Name .. " ВКЛЮЧИЛ СИРЕНУ!")
 end
 
 -- ТЕГ "ВЗЛОМАНО" НАД ГОЛОВАМИ ВСЕХ (ВИДЕН ВСЕМ)
+local tagParts = {}
 local function GlobalTag()
+    -- Удаляем старые теги
+    for _, part in pairs(tagParts) do
+        pcall(function() part:Destroy() end)
+    end
+    tagParts = {}
+    
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character then
             local head = p.Character:FindFirstChild("Head")
             if head then
-                -- Удаляем старый тег, если есть
-                local old = head:FindFirstChild("HackerTag")
-                if old then old:Destroy() end
-                
-                -- Создаём BillboardGui (он будет виден всем, если создан на сервере? Нет, но мы создаём его локально, и он будет виден только нам. Чтобы был виден всем, нужно создать Part с текстом.)
-                -- Используем Part с текстом, который виден всем
+                -- Создаём часть с текстом над головой
                 local part = Instance.new("Part")
                 part.Name = "HackerTag"
                 part.Size = Vector3.new(3, 0.5, 3)
-                part.Position = head.Position + Vector3.new(0, 2, 0)
+                part.Position = head.Position + Vector3.new(0, 2.5, 0)
                 part.Anchored = true
                 part.CanCollide = false
                 part.Transparency = 0.5
                 part.BrickColor = BrickColor.Red()
                 part.Parent = Workspace
                 
-                -- Текст на части (используем SurfaceGui)
+                -- Добавляем текст
                 local gui = Instance.new("SurfaceGui")
                 gui.Parent = part
                 gui.Face = Enum.NormalId.Top
@@ -98,20 +101,22 @@ local function GlobalTag()
                 label.Font = Enum.Font.GothamBold
                 label.Parent = gui
                 
-                -- Привязываем к голове (следим за движением)
+                -- Следим за движением головы
                 local connection
-                connection = game:GetService("RunService").Heartbeat:Connect(function()
+                connection = RunService.Heartbeat:Connect(function()
                     if p.Character and p.Character:FindFirstChild("Head") then
-                        part.Position = p.Character.Head.Position + Vector3.new(0, 2, 0)
+                        part.Position = p.Character.Head.Position + Vector3.new(0, 2.5, 0)
                     else
                         part:Destroy()
                         connection:Disconnect()
                     end
                 end)
+                
+                table.insert(tagParts, part)
             end
         end
     end
-    SendGlobalChat("👾 " .. player.Name .. " ДОБАВИЛ ТЕГ 'ВЗЛОМАНО' ВСЕМ!")
+    SendGlobalChat("👾 " .. player.Name .. " ДОБАВИЛ ТЕГИ ВСЕМ!")
 end
 
 -- УБИТЬ ВСЕХ (РЕАЛЬНО)
@@ -127,7 +132,7 @@ local function GlobalKill()
     SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ ИГРОКОВ!")
 end
 
--- СОБРАТЬ ВСЕХ В ЦЕНТРЕ (ТЕЛЕПОРТ)
+-- СОБРАТЬ ВСЕХ В ЦЕНТРЕ
 local function GlobalTeleport()
     local center = Vector3.new(0, 10, 0)
     for _, p in pairs(Players:GetPlayers()) do
@@ -174,6 +179,20 @@ local function GlobalSpam()
     end
 end
 
+-- КОМБО-ВЗЛОМ (ВСЁ СРАЗУ)
+local function MegaHack()
+    GlobalSiren()
+    task.wait(1)
+    GlobalTag()
+    task.wait(1)
+    GlobalSpam()
+    task.wait(1)
+    GlobalTeleport()
+    task.wait(1)
+    GlobalKill()
+    SendGlobalChat("💎 " .. player.Name .. " АКТИВИРОВАЛ МЕГА-ВЗЛОМ! ВСЕ УНИЧТОЖЕНЫ!")
+end
+
 -- ============================================================
 -- 3. МЕНЮ (АДАПТИРОВАНО ПОД ТЕЛЕФОН)
 -- ============================================================
@@ -195,8 +214,8 @@ btn.BorderColor3 = Color3.fromRGB(255, 255, 255)
 btn.Parent = gui
 
 local menu = Instance.new("Frame")
-menu.Size = UDim2.new(0, 260, 0, 350)
-menu.Position = UDim2.new(0.5, -130, 0.5, -175)
+menu.Size = UDim2.new(0, 260, 0, 380)
+menu.Position = UDim2.new(0.5, -130, 0.5, -190)
 menu.BackgroundColor3 = Color3.fromRGB(10, 10, 25)
 menu.BackgroundTransparency = 0.1
 menu.BorderSizePixel = 2
@@ -242,7 +261,7 @@ scroll.Parent = menu
 local y = 5
 local function AddButton(text, color, func)
     local b = Instance.new("TextButton")
-    b.Size = UDim2.new(1, -10, 0, 32)
+    b.Size = UDim2.new(1, -10, 0, 34)
     b.Position = UDim2.new(0, 5, 0, y)
     b.BackgroundColor3 = color
     b.BackgroundTransparency = 0.2
@@ -252,7 +271,7 @@ local function AddButton(text, color, func)
     b.Font = Enum.Font.Gotham
     b.Parent = scroll
     b.MouseButton1Click:Connect(func)
-    y = y + 37
+    y = y + 39
     scroll.CanvasSize = UDim2.new(0, 0, 0, y + 10)
 end
 
@@ -262,6 +281,7 @@ AddButton("💀 УБИТЬ ВСЕХ", Color3.fromRGB(255,0,0), GlobalKill)
 AddButton("🌀 СОБРАТЬ ВСЕХ", Color3.fromRGB(200,150,0), GlobalTeleport)
 AddButton("🎵 МУЗЫКА (ВКЛ/ВЫКЛ)", Color3.fromRGB(0,150,200), GlobalMusic)
 AddButton("💬 СПАМ (10)", Color3.fromRGB(200,100,0), GlobalSpam)
+AddButton("💎 МЕГА-ВЗЛОМ", Color3.fromRGB(255,0,200), MegaHack)
 AddButton("❌ ЗАКРЫТЬ", Color3.fromRGB(100,100,100), function() menu.Visible = false end)
 
 btn.MouseButton1Click:Connect(function()
@@ -272,8 +292,8 @@ end)
 if UserInputService.TouchEnabled then
     btn.Size = UDim2.new(0, 70, 0, 70)
     btn.Position = UDim2.new(1, -80, 0.85, -35)
-    menu.Size = UDim2.new(0, 300, 0, 400)
-    menu.Position = UDim2.new(0.5, -150, 0.4, -200)
+    menu.Size = UDim2.new(0, 300, 0, 420)
+    menu.Position = UDim2.new(0.5, -150, 0.4, -210)
 end
 
 -- ============================================================
