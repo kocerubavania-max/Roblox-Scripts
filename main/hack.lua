@@ -1,6 +1,6 @@
 -- ============================================================
--- 🎃 RYZEN XENO v9.1 — ГЛОБАЛЬНЫЙ ВЗЛОМ (ФИНАЛ)
--- ВСЕ ВИДЯТ, ВСЕ СЛЫШАТ, ВСЕ ЭФФЕКТЫ ГЛОБАЛЬНЫ
+-- 🎃 RYZEN XENO v9.1 — АДМИН-ПАНЕЛЬ (ГЛОБАЛЬНАЯ)
+-- ТЕЛЕПОРТ, ЗВУК, ТЕГИ, УБИЙСТВО — ВСЁ ДЛЯ ВСЕХ
 -- ============================================================
 
 local Players = game:GetService("Players")
@@ -8,6 +8,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 local ChatService = game:GetService("Chat")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 if not player then return end
@@ -17,7 +19,7 @@ local rootPart = character:FindFirstChild("HumanoidRootPart")
 if not rootPart then return end
 
 -- ============================================================
--- 1. ГЛОБАЛЬНЫЙ ЧАТ (РАБОТАЕТ ЧЕРЕЗ REMOTEEVENT)
+-- 1. ГЛОБАЛЬНЫЙ ЧАТ (4 СПОСОБА)
 -- ============================================================
 local function SendGlobalChat(msg)
     if not msg or msg == "" then return end
@@ -40,54 +42,24 @@ local function SendGlobalChat(msg)
 end
 
 -- ============================================================
--- 2. СОЗДАНИЕ ГЛОБАЛЬНЫХ ОБЪЕКТОВ
+-- 2. ПОИСК REMOTEEVENT ДЛЯ ТЕЛЕПОРТАЦИИ И УБИЙСТВА
 -- ============================================================
-
--- МОЛОТОК НАД ГОЛОВОЙ (ВИДЕН ВСЕМ)
-local function CreateHammer()
-    local head = character:FindFirstChild("Head")
-    if not head then return end
-    
-    local part = Instance.new("Part")
-    part.Name = "AdminHammer"
-    part.Size = Vector3.new(2, 1, 2)
-    part.Position = head.Position + Vector3.new(0, 4, 0)
-    part.Anchored = true
-    part.CanCollide = false
-    part.Transparency = 0.3
-    part.BrickColor = BrickColor.Yellow()
-    part.Parent = Workspace
-    
-    local gui = Instance.new("SurfaceGui")
-    gui.Parent = part
-    gui.Face = Enum.NormalId.Top
-    gui.AlwaysOnTop = true
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.Text = "🔨 АДМИН"
-    label.TextColor3 = Color3.fromRGB(255, 255, 0)
-    label.TextScaled = true
-    label.Font = Enum.Font.GothamBold
-    label.Parent = gui
-    
-    -- Слежение за головой
-    local conn
-    conn = RunService.Heartbeat:Connect(function()
-        if character and character:FindFirstChild("Head") then
-            part.Position = character.Head.Position + Vector3.new(0, 4, 0)
-        else
-            part:Destroy()
-            conn:Disconnect()
+local function FindRemote(patterns)
+    for _, obj in pairs(ReplicatedStorage:GetDescendants()) do
+        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
+            local name = obj.Name:lower()
+            for _, pattern in ipairs(patterns) do
+                if name:find(pattern) then
+                    return obj
+                end
+            end
         end
-    end)
-    return part
+    end
+    return nil
 end
 
-local hammer = CreateHammer()
-
 -- ============================================================
--- 3. ГЛОБАЛЬНЫЕ ЭФФЕКТЫ
+-- 3. ГЛОБАЛЬНЫЕ ФУНКЦИИ
 -- ============================================================
 
 -- СИРЕНА (ЗВУК ДЛЯ ВСЕХ)
@@ -102,23 +74,24 @@ local function GlobalSiren()
     SendGlobalChat("🔊 " .. player.Name .. " ВКЛЮЧИЛ СИРЕНУ!")
 end
 
--- ТЕГ "ВЗЛОМАНО" НАД ГОЛОВАМИ ВСЕХ (БОЛЬШИЕ БУКВЫ)
+-- ТЕГ "ВЗЛОМАНО" НАД ГОЛОВАМИ ВСЕХ (Part)
 local tagParts = {}
 local function GlobalTag()
+    for _, part in pairs(tagParts) do pcall(function() part:Destroy() end) end
+    tagParts = {}
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character then
             local head = p.Character:FindFirstChild("Head")
             if head then
                 local part = Instance.new("Part")
                 part.Name = "HackerTag"
-                part.Size = Vector3.new(4, 0.5, 4)
+                part.Size = Vector3.new(3, 0.5, 3)
                 part.Position = head.Position + Vector3.new(0, 3, 0)
                 part.Anchored = true
                 part.CanCollide = false
                 part.Transparency = 0.5
                 part.BrickColor = BrickColor.Red()
                 part.Parent = Workspace
-                
                 local gui = Instance.new("SurfaceGui")
                 gui.Parent = part
                 gui.Face = Enum.NormalId.Top
@@ -131,7 +104,6 @@ local function GlobalTag()
                 label.TextScaled = true
                 label.Font = Enum.Font.GothamBold
                 label.Parent = gui
-                
                 local conn
                 conn = RunService.Heartbeat:Connect(function()
                     if p.Character and p.Character:FindFirstChild("Head") then
@@ -159,7 +131,6 @@ local function GlobalHackScreen()
     part.Transparency = 0.4
     part.BrickColor = BrickColor.Red()
     part.Parent = Workspace
-    
     local gui = Instance.new("SurfaceGui")
     gui.Parent = part
     gui.Face = Enum.NormalId.Top
@@ -172,32 +143,57 @@ local function GlobalHackScreen()
     label.TextScaled = true
     label.Font = Enum.Font.GothamBold
     label.Parent = gui
-    
     task.wait(10)
     part:Destroy()
 end
 
--- ТЕЛЕПОРТ ВСЕХ В ЦЕНТР
+-- ТЕЛЕПОРТ ВСЕХ (ЧЕРЕЗ REMOTEEVENT ИЛИ ЛОКАЛЬНО)
 local function GlobalTeleport()
     local center = Vector3.new(0, 10, 0)
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player and p.Character then
-            local root = p.Character:FindFirstChild("HumanoidRootPart")
-            if root then
-                pcall(function()
-                    root.CFrame = CFrame.new(center + Vector3.new(math.random(-3, 3), 0, math.random(-3, 3)))
-                end)
+    -- Пытаемся найти RemoteEvent для телепортации
+    local tpRemote = FindRemote({"teleport", "tp", "moveto", "setposition", "admin"})
+    if tpRemote then
+        -- Пытаемся вызвать с разными аргументами
+        local success = pcall(function()
+            if tpRemote:IsA("RemoteEvent") then
+                tpRemote:FireServer("all", center)
+                tpRemote:FireServer(center)
+                tpRemote:FireServer("teleport", "all", center)
+            elseif tpRemote:IsA("RemoteFunction") then
+                tpRemote:InvokeServer("all", center)
+                tpRemote:InvokeServer(center)
             end
+        end)
+        if success then
+            SendGlobalChat("🌀 " .. player.Name .. " ТЕЛЕПОРТИРОВАЛ ВСЕХ!")
+            return
         end
     end
+    -- Если RemoteEvent не найден, телепортируем только себя
     if rootPart then
-        pcall(function() rootPart.CFrame = CFrame.new(center + Vector3.new(0, 15, 0)) end)
+        pcall(function() rootPart.CFrame = CFrame.new(center + Vector3.new(0, 5, 0)) end)
+        SendGlobalChat("⚠️ ТЕЛЕПОРТ ВСЕХ НЕ УДАЛСЯ, ТЕЛЕПОРТИРОВАН ТОЛЬКО ТЫ")
     end
-    SendGlobalChat("🌀 " .. player.Name .. " СОБРАЛ ВСЕХ В ЦЕНТРЕ!")
 end
 
--- УБИТЬ ВСЕХ
+-- УБИТЬ ВСЕХ (ЧЕРЕЗ REMOTEEVENT ИЛИ HEALTH)
 local function GlobalKill()
+    local killRemote = FindRemote({"kill", "death", "admin", "execute"})
+    if killRemote then
+        local success = pcall(function()
+            if killRemote:IsA("RemoteEvent") then
+                killRemote:FireServer("all")
+                killRemote:FireServer("kill", "all")
+            elseif killRemote:IsA("RemoteFunction") then
+                killRemote:InvokeServer("all")
+            end
+        end)
+        if success then
+            SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ!")
+            return
+        end
+    end
+    -- Если не нашли RemoteEvent, убиваем через Health (но только локально)
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character then
             local hum = p.Character:FindFirstChild("Humanoid")
@@ -206,10 +202,10 @@ local function GlobalKill()
             end
         end
     end
-    SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ ИГРОКОВ!")
+    SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ (ЕСЛИ НЕ РАБОТАЕТ — НЕТ REMOTEEVENT)")
 end
 
--- МУЗЫКА (СВОЙ ТРЕК)
+-- МУЗЫКА (ЗВУК В WORKSPACE)
 local music = nil
 local function GlobalMusic()
     if music then
@@ -251,11 +247,53 @@ local function MegaHack()
     GlobalSpam()
     task.wait(0.5)
     GlobalMusic()
-    SendGlobalChat("💎 " .. player.Name .. " АКТИВИРОВАЛ МЕГА-ВЗЛОМ! ВСЕ УНИЧТОЖЕНЫ!")
+    SendGlobalChat("💎 " .. player.Name .. " АКТИВИРОВАЛ МЕГА-ВЗЛОМ!")
 end
 
 -- ============================================================
--- 4. ГУИ (АДАПТИРОВАНО ПОД ТЕЛЕФОН)
+-- 4. МОЛОТОК НАД ГОЛОВОЙ (ВИДЕН ВСЕМ)
+-- ============================================================
+local hammerPart = nil
+local function CreateHammer()
+    if hammerPart then hammerPart:Destroy() end
+    local head = character:FindFirstChild("Head")
+    if not head then return end
+    local part = Instance.new("Part")
+    part.Name = "AdminHammer"
+    part.Size = Vector3.new(2, 0.5, 2)
+    part.Position = head.Position + Vector3.new(0, 3.5, 0)
+    part.Anchored = true
+    part.CanCollide = false
+    part.Transparency = 0.3
+    part.BrickColor = BrickColor.Yellow()
+    part.Parent = Workspace
+    local gui = Instance.new("SurfaceGui")
+    gui.Parent = part
+    gui.Face = Enum.NormalId.Top
+    gui.AlwaysOnTop = true
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = "🔨 АДМИН"
+    label.TextColor3 = Color3.fromRGB(255, 255, 0)
+    label.TextScaled = true
+    label.Font = Enum.Font.GothamBold
+    label.Parent = gui
+    hammerPart = part
+    local conn
+    conn = RunService.Heartbeat:Connect(function()
+        if character and character:FindFirstChild("Head") then
+            part.Position = character.Head.Position + Vector3.new(0, 3.5, 0)
+        else
+            part:Destroy()
+            conn:Disconnect()
+        end
+    end)
+end
+CreateHammer()
+
+-- ============================================================
+-- 5. ГУИ (АДАПТИРОВАНО ПОД ТЕЛЕФОН)
 -- ============================================================
 local gui = Instance.new("ScreenGui")
 gui.Name = "RyzenXeno"
@@ -339,7 +377,7 @@ end
 AddButton("🔊 СИРЕНА", Color3.fromRGB(200,0,0), GlobalSiren)
 AddButton("👾 ТЕГ ВСЕМ", Color3.fromRGB(150,0,150), GlobalTag)
 AddButton("💀 УБИТЬ ВСЕХ", Color3.fromRGB(255,0,0), GlobalKill)
-AddButton("🌀 СОБРАТЬ ВСЕХ", Color3.fromRGB(200,150,0), GlobalTeleport)
+AddButton("🌀 ТЕЛЕПОРТ ВСЕХ", Color3.fromRGB(200,150,0), GlobalTeleport)
 AddButton("🎵 МУЗЫКА (ВКЛ/ВЫКЛ)", Color3.fromRGB(0,150,200), GlobalMusic)
 AddButton("💬 СПАМ (15)", Color3.fromRGB(200,100,0), GlobalSpam)
 AddButton("💎 МЕГА-ВЗЛОМ", Color3.fromRGB(255,0,200), MegaHack)
@@ -349,8 +387,7 @@ btn.MouseButton1Click:Connect(function()
     menu.Visible = not menu.Visible
 end)
 
--- АДАПТАЦИЯ ПОД ТЕЛЕФОН
-if game:GetService("UserInputService").TouchEnabled then
+if UserInputService.TouchEnabled then
     btn.Size = UDim2.new(0, 70, 0, 70)
     btn.Position = UDim2.new(1, -80, 0.85, -35)
     menu.Size = UDim2.new(0, 300, 0, 420)
@@ -358,7 +395,7 @@ if game:GetService("UserInputService").TouchEnabled then
 end
 
 -- ============================================================
--- 5. АВТОЗАПУСК
+-- 6. АВТОЗАПУСК
 -- ============================================================
 task.wait(1)
 SendGlobalChat("🎃 " .. player.Name .. " АКТИВИРОВАЛ RYZEN XENO v9.1!")
@@ -366,5 +403,5 @@ GlobalHackScreen()
 GlobalSiren()
 GlobalTag()
 
-print("✅ СКРИПТ ВНЕДРЁН! ВСЕ ЭФФЕКТЫ ГЛОБАЛЬНЫ!")
-print("🔴 ЕСЛИ ЧТО-ТО НЕ РАБОТАЕТ — ЭТО ЗАЩИТА ИГРЫ.")
+print("✅ АДМИН-ПАНЕЛЬ АКТИВИРОВАНА! НАЖМИ 🎃")
+print("⚠️ ТЕЛЕПОРТ И УБИЙСТВО РАБОТАЮТ, ЕСЛИ В ИГРЕ ЕСТЬ REMOTEEVENT.")
