@@ -1,7 +1,6 @@
 -- ============================================================
--- 🎃 RYZEN XENO v9.1 — ОБНОВЛЁННЫЙ
--- Убрана скорость, полёт -> СБОР ВСЕХ ИГРОКОВ
--- Добавлен МУЗЫКАЛЬНЫЙ ПЛЕЕР с твоим треком
+-- 🎃 RYZEN XENO v9.1 — ГЛОБАЛЬНИЙ + МОБІЛЬНИЙ
+-- Зменшене GUI, 3 способи чату, спроба глобальних дій
 -- ============================================================
 
 local Players = game:GetService("Players")
@@ -16,9 +15,10 @@ local humanoid = character:WaitForChild("Humanoid")
 local rootPart = character:WaitForChild("HumanoidRootPart")
 
 -- ============================================================
--- ФУНКЦИЯ ОТПРАВКИ СООБЩЕНИЙ В ГЛОБАЛЬНЫЙ ЧАТ
+-- ФУНКЦІЇ ЧАТУ (3 СПОСОБИ)
 -- ============================================================
 local function sendGlobalMessage(msg)
+    -- 1. Стандартний метод (більшість ігор)
     local chatEvent = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
     if chatEvent then
         local sayMessage = chatEvent:FindFirstChild("SayMessageRequest")
@@ -27,16 +27,61 @@ local function sendGlobalMessage(msg)
             return true
         end
     end
-    local remote = ReplicatedStorage:FindFirstChild("RemoteEvent")
-    if remote then
-        remote:FireServer("Chat", msg)
+
+    -- 2. Через будь-який RemoteEvent (шукаємо в ReplicatedStorage)
+    for _, obj in pairs(ReplicatedStorage:GetChildren()) do
+        if obj:IsA("RemoteEvent") and obj.Name:find("Chat") then
+            obj:FireServer(msg)
+            return true
+        end
+    end
+
+    -- 3. Пряма трансляція через текстові об'єкти (рідко, але пробуємо)
+    local textService = game:GetService("TextService")
+    local chat = game:GetService("Chat")
+    if chat then
+        chat:Chat(character.Head, msg)
         return true
     end
+
+    warn("❌ Не вдалося відправити повідомлення в чат")
     return false
 end
 
 -- ============================================================
--- СИРЕНА ДЛЯ ВСЕХ
+-- ГЛОБАЛЬНІ ДІЇ (СПРОБА ВИКЛИКАТИ РЕМОУТИ)
+-- ============================================================
+local function findRemote(pattern)
+    for _, obj in pairs(ReplicatedStorage:GetDescendants()) do
+        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
+            if obj.Name:find(pattern) then
+                return obj
+            end
+        end
+    end
+    return nil
+end
+
+local function tryGlobalAction(actionName, ...)
+    local remote = findRemote(actionName)
+    if remote then
+        pcall(function()
+            if remote:IsA("RemoteEvent") then
+                remote:FireServer(...)
+            elseif remote:IsA("RemoteFunction") then
+                remote:InvokeServer(...)
+            end
+            sendGlobalMessage("✅ " .. player.Name .. " ВИКОНАВ " .. actionName .. " ГЛОБАЛЬНО!")
+            return true
+        end)
+    else
+        warn("❌ Ремоут " .. actionName .. " не знайдено")
+        return false
+    end
+end
+
+-- ============================================================
+-- ФУНКЦІЇ
 -- ============================================================
 local function playSiren()
     local sound = Instance.new("Sound")
@@ -51,124 +96,99 @@ local function playSiren()
     task.wait(5)
     sound:Destroy()
     sound2:Destroy()
+    sendGlobalMessage("🔊 " .. player.Name .. " ВКЛЮЧИВ СИРЕНУ!")
 end
 
--- ============================================================
--- ТЕГ "ХАКЕР" ВСЕМ ИГРОКАМ
--- ============================================================
 local function addHackerTagToAll()
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player and p.Character then
-            local head = p.Character:FindFirstChild("Head")
-            if head and not head:FindFirstChild("HackerTag") then
-                local bill = Instance.new("BillboardGui")
-                bill.Name = "HackerTag"
-                bill.Size = UDim2.new(0, 200, 0, 40)
-                bill.Adornee = head
-                bill.StudsOffset = Vector3.new(0, 3, 0)
-                bill.MaxDistance = 150
-                bill.AlwaysOnTop = true
-                bill.Parent = head
-                local frame = Instance.new("Frame")
-                frame.Size = UDim2.new(1, 0, 1, 0)
-                frame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-                frame.BackgroundTransparency = 0.3
-                frame.BorderSizePixel = 2
-                frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
-                frame.Parent = bill
-                local text = Instance.new("TextLabel")
-                text.Size = UDim2.new(1, 0, 1, 0)
-                text.BackgroundTransparency = 1
-                text.Text = "⚠️ ВЗЛОМАНО ⚠️"
-                text.TextColor3 = Color3.fromRGB(255, 255, 255)
-                text.TextScaled = true
-                text.Font = Enum.Font.GothamBold
-                text.Parent = frame
+    -- Це тільки локально, але пробуємо через ремоут
+    if not tryGlobalAction("Tag", "All") then
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= player and p.Character then
+                local head = p.Character:FindFirstChild("Head")
+                if head and not head:FindFirstChild("HackerTag") then
+                    local bill = Instance.new("BillboardGui")
+                    bill.Name = "HackerTag"
+                    bill.Size = UDim2.new(0, 200, 0, 40)
+                    bill.Adornee = head
+                    bill.StudsOffset = Vector3.new(0, 3, 0)
+                    bill.MaxDistance = 150
+                    bill.AlwaysOnTop = true
+                    bill.Parent = head
+                    local frame = Instance.new("Frame")
+                    frame.Size = UDim2.new(1, 0, 1, 0)
+                    frame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+                    frame.BackgroundTransparency = 0.3
+                    frame.BorderSizePixel = 2
+                    frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+                    frame.Parent = bill
+                    local text = Instance.new("TextLabel")
+                    text.Size = UDim2.new(1, 0, 1, 0)
+                    text.BackgroundTransparency = 1
+                    text.Text = "⚠️ ВЗЛОМАНО ⚠️"
+                    text.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    text.TextScaled = true
+                    text.Font = Enum.Font.GothamBold
+                    text.Parent = frame
+                end
             end
         end
+        sendGlobalMessage("👾 " .. player.Name .. " ДОДАВ ТЕГИ (локально)")
     end
-    sendGlobalMessage("👾 " .. player.Name .. " ДОБАВИЛ ТЕГИ ВСЕМ ИГРОКАМ!")
 end
 
--- ============================================================
--- УБИТЬ ВСЕХ ИГРОКОВ
--- ============================================================
 local function killAll()
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player and p.Character then
-            local h = p.Character:FindFirstChild("Humanoid")
-            if h then
-                h.Health = 0
+    if not tryGlobalAction("Kill", "All") then
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= player and p.Character then
+                local h = p.Character:FindFirstChild("Humanoid")
+                if h then h.Health = 0 end
             end
         end
+        sendGlobalMessage("💀 " .. player.Name .. " УБИВ ВСІХ (локально)")
     end
-    sendGlobalMessage("💀 " .. player.Name .. " УБИЛ ВСЕХ ИГРОКОВ!")
 end
 
--- ============================================================
--- 🔥 НОВАЯ ФУНКЦИЯ: ТЕЛЕПОРТ ВСЕХ В ОДНО МЕСТО (ТЫ НАВЕРХУ)
--- ============================================================
 local function teleportAllToCenter()
-    -- Точка сбора (центр карты)
-    local centerPoint = Vector3.new(0, 10, 0)
-    
-    -- Телепортируем всех игроков в центр
-    local playersTeleported = 0
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player and p.Character then
-            local char = p.Character
-            local root = char:FindFirstChild("HumanoidRootPart")
-            if root then
-                root.CFrame = CFrame.new(centerPoint + Vector3.new(math.random(-3, 3), 0, math.random(-3, 3)))
-                playersTeleported = playersTeleported + 1
+    if not tryGlobalAction("Teleport", "All", Vector3.new(0, 10, 0)) then
+        local centerPoint = Vector3.new(0, 10, 0)
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= player and p.Character then
+                local root = p.Character:FindFirstChild("HumanoidRootPart")
+                if root then
+                    root.CFrame = CFrame.new(centerPoint + Vector3.new(math.random(-3, 3), 0, math.random(-3, 3)))
+                end
             end
         end
+        if rootPart then rootPart.CFrame = CFrame.new(centerPoint + Vector3.new(0, 15, 0)) end
+        sendGlobalMessage("🌀 " .. player.Name .. " ЗІБРАВ ВСІХ (локально)")
     end
-    
-    -- Ты остаёшься наверху (над ними)
-    if rootPart then
-        rootPart.CFrame = CFrame.new(centerPoint + Vector3.new(0, 15, 0))
-    end
-    
-    sendGlobalMessage("🌀 " .. player.Name .. " СОБРАЛ ВСЕХ В ОДНОМ МЕСТЕ! Я НАВЕРХУ!")
-    sendGlobalMessage("💀 " .. playersTeleported .. " ИГРОКОВ СОБРАНО!")
 end
 
--- ============================================================
--- 🎵 НОВАЯ ФУНКЦИЯ: МУЗЫКАЛЬНЫЙ ПЛЕЕР (ТВОЙ ТРЕК)
--- ============================================================
 local function playCustomMusic()
-    -- ⚠️ ВСТАВЬ СЮДА СВОЙ AUDIO ID!
-    -- Как получить: загрузи звук в Roblox → скопируй ID
-    local yourAudioId = "9120386436"  -- ← ЗАМЕНИ НА СВОЙ ID
-    
+    local yourAudioId = "9120386436"  -- ← ЗАМІНИ НА СВІЙ ID
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://" .. yourAudioId
     sound.Volume = 0.8
-    sound.Looped = true  -- Зациклить
+    sound.Looped = true
     sound.Parent = Workspace
     sound:Play()
-    
-    sendGlobalMessage("🎵 " .. player.Name .. " ВКЛЮЧИЛ МУЗЫКУ ДЛЯ ВСЕХ!")
-    
-    -- Кнопка для остановки (в меню)
+    sendGlobalMessage("🎵 " .. player.Name .. " ВКЛЮЧИВ МУЗИКУ!")
     return sound
 end
-
 local currentMusic = nil
 
 -- ============================================================
--- GUI (ТОЛЬКО РЕАЛЬНЫЕ ФУНКЦИИ)
+-- МОБІЛЬНЕ ГУІ (ЗМЕНШЕНЕ)
 -- ============================================================
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "RyzenXenoRealGUI"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player.PlayerGui
 
--- Плавающая кнопка
+-- Кнопка відкриття (менша)
 local openBtn = Instance.new("TextButton")
-openBtn.Size = UDim2.new(0, 60, 0, 60)
-openBtn.Position = UDim2.new(1, -75, 0.9, -35)
+openBtn.Size = UDim2.new(0, 55, 0, 55)
+openBtn.Position = UDim2.new(1, -65, 0.9, -30)
 openBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 openBtn.Text = "🎃"
 openBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -178,10 +198,10 @@ openBtn.BorderSizePixel = 2
 openBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
 openBtn.Parent = screenGui
 
--- Меню
+-- Меню (вужче)
 local menuFrame = Instance.new("Frame")
-menuFrame.Size = UDim2.new(0, 350, 0, 420)
-menuFrame.Position = UDim2.new(0.5, -175, 0.5, -210)
+menuFrame.Size = UDim2.new(0, 280, 0, 380)  -- Зменшено
+menuFrame.Position = UDim2.new(0.5, -140, 0.5, -190)
 menuFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 25)
 menuFrame.BackgroundTransparency = 0.1
 menuFrame.BorderSizePixel = 2
@@ -190,17 +210,17 @@ menuFrame.Visible = false
 menuFrame.ClipsDescendants = true
 menuFrame.Parent = screenGui
 
--- Заголовок
+-- Заголовок (менший)
 local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 45)
+header.Size = UDim2.new(1, 0, 0, 35)
 header.BackgroundColor3 = Color3.fromRGB(200, 0, 50)
 header.Parent = menuFrame
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -40, 1, 0)
-title.Position = UDim2.new(0, 10, 0, 0)
+title.Size = UDim2.new(1, -30, 1, 0)
+title.Position = UDim2.new(0, 5, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "🎃 RYZEN XENO v9.1"
+title.Text = "🎃 RYZEN"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
@@ -208,8 +228,8 @@ title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = header
 
 local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 30, 0, 30)
-closeBtn.Position = UDim2.new(1, -35, 0, 7)
+closeBtn.Size = UDim2.new(0, 25, 0, 25)
+closeBtn.Position = UDim2.new(1, -30, 0, 5)
 closeBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
 closeBtn.Text = "✕"
 closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -220,19 +240,19 @@ closeBtn.MouseButton1Click:Connect(function()
     menuFrame.Visible = false
 end)
 
--- Скролл
+-- Скролл (менші кнопки)
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, -10, 1, -55)
-scroll.Position = UDim2.new(0, 5, 0, 50)
+scroll.Size = UDim2.new(1, -10, 1, -45)
+scroll.Position = UDim2.new(0, 5, 0, 40)
 scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 6
+scroll.ScrollBarThickness = 4
 scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 scroll.Parent = menuFrame
 
 local yPos = 5
 local function addButton(text, color, callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -10, 0, 45)
+    btn.Size = UDim2.new(1, -10, 0, 35)  -- Менші кнопки
     btn.Position = UDim2.new(0, 5, 0, yPos)
     btn.BackgroundColor3 = color or Color3.fromRGB(30, 30, 60)
     btn.BackgroundTransparency = 0.2
@@ -242,59 +262,50 @@ local function addButton(text, color, callback)
     btn.Font = Enum.Font.Gotham
     btn.Parent = scroll
     btn.MouseButton1Click:Connect(callback)
-    yPos = yPos + 50
+    yPos = yPos + 40
     scroll.CanvasSize = UDim2.new(0, 0, 0, yPos + 10)
     return btn
 end
 
 -- ============================================================
--- КНОПКИ (ОБНОВЛЁННЫЕ)
+-- КНОПКИ
 -- ============================================================
-
--- 1. Сирена
 addButton("🔊 СИРЕНА", Color3.fromRGB(200, 0, 0), function()
     playSiren()
-    sendGlobalMessage("🔊 " .. player.Name .. " ВКЛЮЧИЛ СИРЕНУ!")
 end)
 
--- 2. Теги всем
-addButton("👾 ТЕГ ВСЕМ", Color3.fromRGB(150, 0, 150), function()
+addButton("👾 ТЕГ ВСІМ", Color3.fromRGB(150, 0, 150), function()
     addHackerTagToAll()
 end)
 
--- 3. Убить всех
-addButton("💀 УБИТЬ ВСЕХ", Color3.fromRGB(255, 0, 0), function()
+addButton("💀 УБИТИ ВСІХ", Color3.fromRGB(255, 0, 0), function()
     killAll()
 end)
 
--- 4. 🔥 НОВАЯ КНОПКА: Собрать всех в одну точку
-addButton("🌀 СОБРАТЬ ВСЕХ", Color3.fromRGB(200, 150, 0), function()
+addButton("🌀 ЗІБРАТИ ВСІХ", Color3.fromRGB(200, 150, 0), function()
     teleportAllToCenter()
 end)
 
--- 5. 🎵 НОВАЯ КНОПКА: Включить музыку
-addButton("🎵 ВКЛЮЧИТЬ ТРЕК", Color3.fromRGB(0, 150, 200), function()
+addButton("🎵 МУЗИКА (ВКЛ/ВИКЛ)", Color3.fromRGB(0, 150, 200), function()
     if currentMusic then
         currentMusic:Destroy()
         currentMusic = nil
-        sendGlobalMessage("🔇 " .. player.Name .. " ВЫКЛЮЧИЛ МУЗЫКУ")
+        sendGlobalMessage("🔇 " .. player.Name .. " ВИКЛЮЧИВ МУЗИКУ")
     else
         currentMusic = playCustomMusic()
     end
 end)
 
--- 6. Noclip
 addButton("🌀 NOCLIP", Color3.fromRGB(0, 100, 200), function()
     for _, part in pairs(character:GetDescendants()) do
         if part:IsA("BasePart") then
             part.CanCollide = false
         end
     end
-    sendGlobalMessage("🌀 " .. player.Name .. " ВКЛЮЧИЛ NOCLIP!")
+    sendGlobalMessage("🌀 " .. player.Name .. " ВКЛЮЧИВ NOCLIP")
 end)
 
--- 7. Телепорт к игроку
-addButton("🌀 ТЕЛЕПОРТ К ИГРОКУ", Color3.fromRGB(200, 150, 0), function()
+addButton("🌀 ТЕЛЕПОРТ ДО ГРАВЦЯ", Color3.fromRGB(200, 150, 0), function()
     local targets = {}
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character then
@@ -304,42 +315,40 @@ addButton("🌀 ТЕЛЕПОРТ К ИГРОКУ", Color3.fromRGB(200, 150, 0), 
     if #targets > 0 then
         local target = targets[math.random(1, #targets)]
         rootPart.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
-        sendGlobalMessage("🌀 " .. player.Name .. " ТЕЛЕПОРТИРОВАЛСЯ К " .. target.Name)
+        sendGlobalMessage("🌀 " .. player.Name .. " ТЕЛЕПОРТУВАВСЯ ДО " .. target.Name)
     end
 end)
 
--- 8. Спам в чат
-addButton("💬 СПАМ В ЧАТ", Color3.fromRGB(200, 100, 0), function()
+addButton("💬 СПАМ (10)", Color3.fromRGB(200, 100, 0), function()
     for i = 1, 10 do
-        sendGlobalMessage("🔥 " .. player.Name .. " — ХАКЕР! ВСЕ ЛОХИ!")
+        sendGlobalMessage("🔥 " .. player.Name .. " — ХАКЕР! ВСІ ЛОХИ!")
         task.wait(0.3)
     end
 end)
 
--- 9. Закрыть
-addButton("❌ ЗАКРЫТЬ", Color3.fromRGB(100, 100, 100), function()
+addButton("❌ ЗАКРИТИ", Color3.fromRGB(100, 100, 100), function()
     menuFrame.Visible = false
 end)
 
--- Открытие/закрытие меню
+-- Відкриття/закриття
 openBtn.MouseButton1Click:Connect(function()
     menuFrame.Visible = not menuFrame.Visible
 end)
 
--- Адаптация под мобильные
+-- Адаптація під мобільний (розміри вже зменшені)
 if UserInputService.TouchEnabled then
-    openBtn.Size = UDim2.new(0, 80, 0, 80)
-    openBtn.Position = UDim2.new(1, -95, 0.85, -40)
-    menuFrame.Size = UDim2.new(0, 380, 0, 480)
-    menuFrame.Position = UDim2.new(0.5, -190, 0.4, -240)
+    openBtn.Size = UDim2.new(0, 70, 0, 70)
+    openBtn.Position = UDim2.new(1, -80, 0.85, -35)
+    menuFrame.Size = UDim2.new(0, 300, 0, 400)
+    menuFrame.Position = UDim2.new(0.5, -150, 0.4, -200)
 end
 
 -- ============================================================
 -- АВТОЗАПУСК
 -- ============================================================
 task.wait(1)
-sendGlobalMessage("🎃 " .. player.Name .. " АКТИВИРОВАЛ RYZEN XENO v9.1!")
+sendGlobalMessage("🎃 " .. player.Name .. " АКТИВУВАВ RYZEN XENO v9.1!")
 playSiren()
 
-print("🎃 RYZEN XENO v9.1 — ОБНОВЛЁН! НАЖМИ КРАСНУЮ КНОПКУ ДЛЯ МЕНЮ.")
-print("🔥 НОВЫЕ ФУНКЦИИ: СБОР ВСЕХ + МУЗЫКАЛЬНЫЙ ПЛЕЕР!")
+print("🎃 RYZEN XENO v9.1 — МОБІЛЬНА ВЕРСІЯ ЗАПУЩЕНА!")
+print("✅ МЕНЮ ЗМЕНШЕНО! ЧАТ ПРАЦЮЄ!")
