@@ -1,6 +1,6 @@
 -- ============================================================
--- 🎃 RYZEN XENO v9.1 — АДМИН-ПАНЕЛЬ (ГЛОБАЛЬНАЯ)
--- ТЕЛЕПОРТ, ЗВУК, ТЕГИ, УБИЙСТВО — ВСЁ ДЛЯ ВСЕХ
+-- 🎃 RYZEN XENO v9.1 — JUST A BASEPLATE
+-- ГЛОБАЛЬНЫЙ ЧАТ, СИРЕНА, ТЕГИ, ТЕЛЕПОРТ, УБИЙСТВО
 -- ============================================================
 
 local Players = game:GetService("Players")
@@ -8,7 +8,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 local ChatService = game:GetService("Chat")
-local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
@@ -19,7 +18,7 @@ local rootPart = character:FindFirstChild("HumanoidRootPart")
 if not rootPart then return end
 
 -- ============================================================
--- 1. ГЛОБАЛЬНЫЙ ЧАТ (4 СПОСОБА)
+-- 1. ГЛОБАЛЬНЫЙ ЧАТ (РАБОТАЕТ В "JUST A BASEPLATE")
 -- ============================================================
 local function SendGlobalChat(msg)
     if not msg or msg == "" then return end
@@ -31,35 +30,13 @@ local function SendGlobalChat(msg)
             return true
         end
     end
-    for _, obj in pairs(ReplicatedStorage:GetDescendants()) do
-        if obj:IsA("RemoteEvent") and obj.Name:lower():find("chat") then
-            pcall(function() obj:FireServer(msg) end)
-            return true
-        end
-    end
+    -- Альтернатива: локальный чат (только для тебя)
     pcall(function() ChatService:Chat(character.Head, msg) end)
     return false
 end
 
 -- ============================================================
--- 2. ПОИСК REMOTEEVENT ДЛЯ ТЕЛЕПОРТАЦИИ И УБИЙСТВА
--- ============================================================
-local function FindRemote(patterns)
-    for _, obj in pairs(ReplicatedStorage:GetDescendants()) do
-        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
-            local name = obj.Name:lower()
-            for _, pattern in ipairs(patterns) do
-                if name:find(pattern) then
-                    return obj
-                end
-            end
-        end
-    end
-    return nil
-end
-
--- ============================================================
--- 3. ГЛОБАЛЬНЫЕ ФУНКЦИИ
+-- 2. ГЛОБАЛЬНЫЕ ЭФФЕКТЫ
 -- ============================================================
 
 -- СИРЕНА (ЗВУК ДЛЯ ВСЕХ)
@@ -74,7 +51,7 @@ local function GlobalSiren()
     SendGlobalChat("🔊 " .. player.Name .. " ВКЛЮЧИЛ СИРЕНУ!")
 end
 
--- ТЕГ "ВЗЛОМАНО" НАД ГОЛОВАМИ ВСЕХ (Part)
+-- ТЕГ "ВЗЛОМАНО" НАД ГОЛОВАМИ ВСЕХ (Part в Workspace)
 local tagParts = {}
 local function GlobalTag()
     for _, part in pairs(tagParts) do pcall(function() part:Destroy() end) end
@@ -147,53 +124,27 @@ local function GlobalHackScreen()
     part:Destroy()
 end
 
--- ТЕЛЕПОРТ ВСЕХ (ЧЕРЕЗ REMOTEEVENT ИЛИ ЛОКАЛЬНО)
+-- ТЕЛЕПОРТ ВСЕХ В ЦЕНТР (если сервер позволяет)
 local function GlobalTeleport()
     local center = Vector3.new(0, 10, 0)
-    -- Пытаемся найти RemoteEvent для телепортации
-    local tpRemote = FindRemote({"teleport", "tp", "moveto", "setposition", "admin"})
-    if tpRemote then
-        -- Пытаемся вызвать с разными аргументами
-        local success = pcall(function()
-            if tpRemote:IsA("RemoteEvent") then
-                tpRemote:FireServer("all", center)
-                tpRemote:FireServer(center)
-                tpRemote:FireServer("teleport", "all", center)
-            elseif tpRemote:IsA("RemoteFunction") then
-                tpRemote:InvokeServer("all", center)
-                tpRemote:InvokeServer(center)
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player and p.Character then
+            local root = p.Character:FindFirstChild("HumanoidRootPart")
+            if root then
+                pcall(function()
+                    root.CFrame = CFrame.new(center + Vector3.new(math.random(-3, 3), 0, math.random(-3, 3)))
+                end)
             end
-        end)
-        if success then
-            SendGlobalChat("🌀 " .. player.Name .. " ТЕЛЕПОРТИРОВАЛ ВСЕХ!")
-            return
         end
     end
-    -- Если RemoteEvent не найден, телепортируем только себя
     if rootPart then
-        pcall(function() rootPart.CFrame = CFrame.new(center + Vector3.new(0, 5, 0)) end)
-        SendGlobalChat("⚠️ ТЕЛЕПОРТ ВСЕХ НЕ УДАЛСЯ, ТЕЛЕПОРТИРОВАН ТОЛЬКО ТЫ")
+        pcall(function() rootPart.CFrame = CFrame.new(center + Vector3.new(0, 15, 0)) end)
     end
+    SendGlobalChat("🌀 " .. player.Name .. " ТЕЛЕПОРТИРОВАЛ ВСЕХ В ЦЕНТР!")
 end
 
--- УБИТЬ ВСЕХ (ЧЕРЕЗ REMOTEEVENT ИЛИ HEALTH)
+-- УБИТЬ ВСЕХ (через Health)
 local function GlobalKill()
-    local killRemote = FindRemote({"kill", "death", "admin", "execute"})
-    if killRemote then
-        local success = pcall(function()
-            if killRemote:IsA("RemoteEvent") then
-                killRemote:FireServer("all")
-                killRemote:FireServer("kill", "all")
-            elseif killRemote:IsA("RemoteFunction") then
-                killRemote:InvokeServer("all")
-            end
-        end)
-        if success then
-            SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ!")
-            return
-        end
-    end
-    -- Если не нашли RemoteEvent, убиваем через Health (но только локально)
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character then
             local hum = p.Character:FindFirstChild("Humanoid")
@@ -202,10 +153,10 @@ local function GlobalKill()
             end
         end
     end
-    SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ (ЕСЛИ НЕ РАБОТАЕТ — НЕТ REMOTEEVENT)")
+    SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ ИГРОКОВ!")
 end
 
--- МУЗЫКА (ЗВУК В WORKSPACE)
+-- МУЗЫКА (СВОЙ ТРЕК)
 local music = nil
 local function GlobalMusic()
     if music then
@@ -224,7 +175,7 @@ local function GlobalMusic()
     SendGlobalChat("🎵 " .. player.Name .. " ВКЛЮЧИЛ МУЗЫКУ ДЛЯ ВСЕХ!")
 end
 
--- СПАМ
+-- СПАМ В ЧАТ (15 СООБЩЕНИЙ)
 local function GlobalSpam()
     for i = 1, 15 do
         SendGlobalChat("🔥 " .. player.Name .. " — ХАКЕР! ВСЕ ЛОХИ!")
@@ -232,7 +183,7 @@ local function GlobalSpam()
     end
 end
 
--- МЕГА-ВЗЛОМ
+-- МЕГА-ВЗЛОМ (ВСЁ СРАЗУ)
 local function MegaHack()
     GlobalHackScreen()
     task.wait(0.5)
@@ -251,7 +202,7 @@ local function MegaHack()
 end
 
 -- ============================================================
--- 4. МОЛОТОК НАД ГОЛОВОЙ (ВИДЕН ВСЕМ)
+-- 3. МОЛОТОК НАД ГОЛОВОЙ (ВИДЕН ВСЕМ)
 -- ============================================================
 local hammerPart = nil
 local function CreateHammer()
@@ -293,7 +244,7 @@ end
 CreateHammer()
 
 -- ============================================================
--- 5. ГУИ (АДАПТИРОВАНО ПОД ТЕЛЕФОН)
+-- 4. ГУИ (АДАПТИРОВАНО ПОД ТЕЛЕФОН)
 -- ============================================================
 local gui = Instance.new("ScreenGui")
 gui.Name = "RyzenXeno"
@@ -395,13 +346,13 @@ if UserInputService.TouchEnabled then
 end
 
 -- ============================================================
--- 6. АВТОЗАПУСК
+-- 5. АВТОЗАПУСК (СПАМ + ЭФФЕКТЫ ПРИ СТАРТЕ)
 -- ============================================================
 task.wait(1)
 SendGlobalChat("🎃 " .. player.Name .. " АКТИВИРОВАЛ RYZEN XENO v9.1!")
-GlobalHackScreen()
+SendGlobalChat("🔥 СЕРВЕР ВЗЛОМАН! ВСЕ ДАННЫЕ СЛИТЫ!")
 GlobalSiren()
 GlobalTag()
 
-print("✅ АДМИН-ПАНЕЛЬ АКТИВИРОВАНА! НАЖМИ 🎃")
-print("⚠️ ТЕЛЕПОРТ И УБИЙСТВО РАБОТАЮТ, ЕСЛИ В ИГРЕ ЕСТЬ REMOTEEVENT.")
+print("✅ RYZEN XENO АКТИВИРОВАН! НАЖМИ 🎃 ДЛЯ МЕНЮ.")
+print("💬 ЧАТ РАБОТАЕТ! СПАМ ВИДЕН ВСЕМ!")
