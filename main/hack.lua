@@ -1,90 +1,73 @@
 -- ============================================================
--- 🎃 RYZEN XENO v9.2 — ГЛОБАЛЬНАЯ ВЕРСИЯ (ПОИСК REMOTEEVENTS + КОМАНДЫ)
+-- 🎃 RYZEN XENO v9.1 — INFINITE YIELD + ГЛОБАЛЬНЫЙ ВЗЛОМ
+-- ВСЕ ФУНКЦИИ IY + НАШИ ГЛОБАЛЬНЫЕ ЭФФЕКТЫ
 -- ============================================================
+
+-- 1. ЗАГРУЗКА INFINITE YIELD (ОСНОВНАЯ ВЕРСИЯ)
+print("🎃 Загрузка Infinite Yield...")
+loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+
+-- Ждём, пока IY загрузится и создаст глобальные функции
+repeat task.wait() until type(getgenv().IY_LOADED) == "boolean" and getgenv().IY_LOADED == true
+print("✅ Infinite Yield загружен!")
+
+-- ============================================================
+-- 2. ДОБАВЛЯЕМ НАШИ ГЛОБАЛЬНЫЕ КОМАНДЫ В IY
+-- ============================================================
+
+-- Получаем доступ к функциям IY (они уже в _G)
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
-local ChatService = game:GetService("Chat")
-local UserInputService = game:GetService("UserInputService")
-
+local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
-if not player then return end
-
 local character = player.Character or player.CharacterAdded:Wait()
-local rootPart = character:FindFirstChild("HumanoidRootPart")
-if not rootPart then return end
 
--- ============================================================
--- 0. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ПОИСКА REMOTEEVENTS
--- ============================================================
-local function FindRemoteEvent(keywords)
-    keywords = type(keywords) == "table" and keywords or {keywords}
-    local function search(container)
-        for _, child in pairs(container:GetDescendants()) do
-            if child:IsA("RemoteEvent") then
-                local name = child.Name:lower()
-                for _, kw in pairs(keywords) do
-                    if name:find(kw:lower()) then
-                        return child
-                    end
-                end
-            end
-        end
-        return nil
+-- Функция отправки глобального сообщения (IY уже имеет chatMessage, но мы создадим свою для удобства)
+local function sendGlobalChat(msg)
+    if chatMessage then
+        chatMessage(msg)
+    else
+        -- fallback
+        pcall(function()
+            game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+        end)
     end
-    -- Поиск в ReplicatedStorage, ReplicatedFirst, Players (иногда события там)
-    local targets = {ReplicatedStorage, game:GetService("ReplicatedFirst"), Players}
-    for _, target in pairs(targets) do
-        local ev = search(target)
-        if ev then return ev end
-    end
-    return nil
 end
 
 -- ============================================================
--- 1. ГЛОБАЛЬНЫЙ ЧАТ (РАБОТАЕТ ВСЕГДА)
+-- ГЛОБАЛЬНАЯ СИРЕНА
 -- ============================================================
-local function SendGlobalChat(msg)
-    if not msg or msg == "" then return end
-    local chatEvent = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
-    if chatEvent then
-        local say = chatEvent:FindFirstChild("SayMessageRequest")
-        if say then
-            pcall(function() say:FireServer(msg, "All") end)
-            return true
-        end
-    end
-    pcall(function() ChatService:Chat(character.Head, msg) end)
-    return false
+local function globalSiren()
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://9120385565"
+    sound.Volume = 1
+    sound.Parent = Workspace
+    pcall(function() sound:Play() end)
+    task.wait(5)
+    sound:Destroy()
+    sendGlobalChat("🔊 " .. player.Name .. " ВКЛЮЧИЛ СИРЕНУ!")
 end
 
 -- ============================================================
--- 2. ГЛОБАЛЬНЫЙ ТЕГ (через RemoteEvent или команду)
+-- ТЕГ "ВЗЛОМАНО" НАД ГОЛОВАМИ ВСЕХ (Part в Workspace)
 -- ============================================================
-local function GlobalTag()
-    -- Попытка найти RemoteEvent для тегов
-    local tagEvent = FindRemoteEvent({"tag", "admin", "global", "hack"})
-    if tagEvent then
-        pcall(function() tagEvent:FireServer("all") end)
-        SendGlobalChat("👾 " .. player.Name .. " АКТИВИРОВАЛ ГЛОБАЛЬНЫЕ ТЕГИ!")
-        return
-    end
-    -- Запасной вариант: команда в чат (если серверный скрипт обрабатывает)
-    SendGlobalChat("/tag all")
-    SendGlobalChat("👾 " .. player.Name .. " АКТИВИРОВАЛ ГЛОБАЛЬНЫЕ ТЕГИ!")
-    -- Локальный тег (виден только вам) – как резерв
-    pcall(function()
-        for _, p in pairs(Players:GetPlayers()) do
-            if p ~= player and p.Character and p.Character:FindFirstChild("Head") then
-                local head = p.Character.Head
+local tagParts = {}
+local function globalTag()
+    for _, part in pairs(tagParts) do pcall(function() part:Destroy() end) end
+    tagParts = {}
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player and p.Character then
+            local head = p.Character:FindFirstChild("Head")
+            if head then
                 local part = Instance.new("Part")
+                part.Name = "HackerTag"
                 part.Size = Vector3.new(3, 0.5, 3)
                 part.Position = head.Position + Vector3.new(0, 3, 0)
                 part.Anchored = true
                 part.CanCollide = false
-                part.Transparency = 0.9
+                part.Transparency = 0.5
                 part.BrickColor = BrickColor.Red()
                 part.Parent = Workspace
                 local gui = Instance.new("SurfaceGui")
@@ -92,215 +75,209 @@ local function GlobalTag()
                 gui.Face = Enum.NormalId.Top
                 gui.AlwaysOnTop = true
                 local label = Instance.new("TextLabel")
-                label.Size = UDim2.new(1,0,1,0)
+                label.Size = UDim2.new(1, 0, 1, 0)
                 label.BackgroundTransparency = 1
                 label.Text = "⚠️ ВЗЛОМАНО ⚠️"
-                label.TextColor3 = Color3.fromRGB(255,0,0)
+                label.TextColor3 = Color3.fromRGB(255, 0, 0)
                 label.TextScaled = true
                 label.Font = Enum.Font.GothamBold
                 label.Parent = gui
-                game:GetService("Debris"):AddItem(part, 10) -- самоудалится через 10 сек
+                local conn
+                conn = RunService.Heartbeat:Connect(function()
+                    if p.Character and p.Character:FindFirstChild("Head") then
+                        part.Position = p.Character.Head.Position + Vector3.new(0, 3, 0)
+                    else
+                        part:Destroy()
+                        conn:Disconnect()
+                    end
+                end)
+                table.insert(tagParts, part)
             end
         end
-    end)
+    end
+    sendGlobalChat("👾 " .. player.Name .. " ДОБАВИЛ ТЕГИ ВСЕМ!")
 end
 
 -- ============================================================
--- 3. СИРЕНА (через RemoteEvent или команду)
+-- УБИТЬ ВСЕХ (через Health)
 -- ============================================================
-local function GlobalSiren()
-    local sirenEvent = FindRemoteEvent({"siren", "sound", "alarm", "admin"})
-    if sirenEvent then
-        pcall(function() sirenEvent:FireServer("all") end)
-        SendGlobalChat("🔊 " .. player.Name .. " ВКЛЮЧИЛ ГЛОБАЛЬНУЮ СИРЕНУ!")
-        return
+local function globalKill()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player and p.Character then
+            local hum = p.Character:FindFirstChild("Humanoid")
+            if hum then
+                pcall(function() hum.Health = 0 end)
+            end
+        end
     end
-    SendGlobalChat("/siren all")
-    SendGlobalChat("🔊 " .. player.Name .. " ВКЛЮЧИЛ СИРЕНУ!")
-    -- Локальный звук (слышен только вам)
-    local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://9120385565"
-    sound.Volume = 1
-    sound.Parent = Workspace
-    pcall(function() sound:Play() end)
-    game:GetService("Debris"):AddItem(sound, 6)
+    sendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ ИГРОКОВ!")
 end
 
 -- ============================================================
--- 4. ТЕЛЕПОРТ ВСЕХ (через RemoteEvent или команду)
+-- ТЕЛЕПОРТ ВСЕХ В ЦЕНТР
 -- ============================================================
-local function GlobalTeleport()
-    local tpEvent = FindRemoteEvent({"teleport", "tp", "bring", "admin"})
-    if tpEvent then
-        pcall(function() tpEvent:FireServer("all", Vector3.new(0, 10, 0)) end)
-        SendGlobalChat("🌀 " .. player.Name .. " ТЕЛЕПОРТИРОВАЛ ВСЕХ!")
-        return
+local function globalTeleport()
+    local center = Vector3.new(0, 10, 0)
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player and p.Character then
+            local root = p.Character:FindFirstChild("HumanoidRootPart")
+            if root then
+                pcall(function() root.CFrame = CFrame.new(center + Vector3.new(math.random(-3, 3), 0, math.random(-3, 3))) end)
+            end
+        end
     end
-    SendGlobalChat("/tp all 0 10 0")
-    SendGlobalChat("🌀 " .. player.Name .. " ТЕЛЕПОРТИРОВАЛ ВСЕХ!")
-    -- локальный телепорт только вас
-    if rootPart then
-        pcall(function() rootPart.CFrame = CFrame.new(Vector3.new(0, 10, 0)) end)
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        pcall(function() character.HumanoidRootPart.CFrame = CFrame.new(center + Vector3.new(0, 15, 0)) end)
     end
+    sendGlobalChat("🌀 " .. player.Name .. " СОБРАЛ ВСЕХ В ЦЕНТРЕ!")
 end
 
 -- ============================================================
--- 5. УБИТЬ ВСЕХ (через RemoteEvent или команду)
+-- КРАСНОЕ НЕБО И ФОНОВЫЙ ТЕКСТ
 -- ============================================================
-local function GlobalKill()
-    local killEvent = FindRemoteEvent({"kill", "death", "damage", "admin"})
-    if killEvent then
-        pcall(function() killEvent:FireServer("all") end)
-        SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ!")
-        return
-    end
-    SendGlobalChat("/kill all")
-    SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ!")
-    -- локальное убийство только вас
-    local hum = character:FindFirstChild("Humanoid")
-    if hum then pcall(function() hum.Health = 0 end) end
-end
-
--- ============================================================
--- 6. МУЗЫКА (через RemoteEvent или команду)
--- ============================================================
-local function GlobalMusic()
-    local musicEvent = FindRemoteEvent({"music", "song", "audio", "play"})
-    if musicEvent then
-        pcall(function() musicEvent:FireServer("toggle") end)
-        SendGlobalChat("🎵 " .. player.Name .. " ПЕРЕКЛЮЧИЛ МУЗЫКУ!")
-        return
-    end
-    SendGlobalChat("/music toggle")
-    SendGlobalChat("🎵 " .. player.Name .. " ПЕРЕКЛЮЧИЛ МУЗЫКУ!")
-end
-
--- ============================================================
--- 7. СПАМ (только чат, уже глобальный)
--- ============================================================
-local function GlobalSpam()
-    for i = 1, 15 do
-        SendGlobalChat("🔥 " .. player.Name .. " — ХАКЕР! ВСЕ ЛОХИ!")
-        task.wait(0.3)
-    end
-end
-
--- ============================================================
--- 8. КРАСНОЕ НЕБО (через RemoteEvent или команду)
--- ============================================================
-local function RedSky()
-    local skyEvent = FindRemoteEvent({"sky", "weather", "lighting", "fog", "admin"})
-    if skyEvent then
-        pcall(function() skyEvent:FireServer("red") end)
-        SendGlobalChat("🌅 " .. player.Name .. " ВКЛЮЧИЛ КРАСНОЕ НЕБО!")
-        return
-    end
-    SendGlobalChat("/weather red")
-    SendGlobalChat("🌅 " .. player.Name .. " ВКЛЮЧИЛ КРАСНОЕ НЕБО!")
-    -- Локальное изменение освещения (только вы видите)
-    Lighting.Ambient = Color3.fromRGB(255,0,0)
-    Lighting.OutdoorAmbient = Color3.fromRGB(255,0,0)
+local redSkyPart = nil
+local function globalRedSky()
+    -- Изменяем освещение
+    Lighting.Ambient = Color3.fromRGB(255, 0, 0)
+    Lighting.OutdoorAmbient = Color3.fromRGB(255, 0, 0)
     Lighting.Brightness = 2
-    Lighting.FogColor = Color3.fromRGB(255,0,0)
-end
-
--- ============================================================
--- 9. МЕГА-ВЗЛОМ (комбинация)
--- ============================================================
-local function MegaHack()
-    RedSky()
-    task.wait(1)
-    GlobalSiren()
-    task.wait(0.5)
-    GlobalTag()
-    task.wait(0.5)
-    GlobalTeleport()
-    task.wait(0.5)
-    GlobalKill()
-    task.wait(0.5)
-    GlobalSpam()
-    task.wait(0.5)
-    GlobalMusic()
-    SendGlobalChat("💎 " .. player.Name .. " АКТИВИРОВАЛ МЕГА-ВЗЛОМ!")
-end
-
--- ============================================================
--- 10. МОЛОТОК НАД ГОЛОВОЙ (ЛОКАЛЬНЫЙ, только для вас)
--- ============================================================
-local hammerPart = nil
-local function CreateHammer()
-    if hammerPart then hammerPart:Destroy() end
-    local head = character:FindFirstChild("Head")
-    if not head then return end
+    Lighting.FogColor = Color3.fromRGB(255, 0, 0)
+    Lighting.FogEnd = 1000
+    -- Создаём огромный красный Part с текстом
+    if redSkyPart then redSkyPart:Destroy() end
     local part = Instance.new("Part")
-    part.Name = "AdminHammer"
-    part.Size = Vector3.new(2, 0.5, 2)
-    part.Position = head.Position + Vector3.new(0, 3.5, 0)
+    part.Name = "RedSky"
+    part.Size = Vector3.new(1000, 1, 1000)
+    part.Position = Vector3.new(0, 100, 0)
     part.Anchored = true
     part.CanCollide = false
+    part.BrickColor = BrickColor.Red()
     part.Transparency = 0.3
-    part.BrickColor = BrickColor.Yellow()
     part.Parent = Workspace
     local gui = Instance.new("SurfaceGui")
     gui.Parent = part
     gui.Face = Enum.NormalId.Top
     gui.AlwaysOnTop = true
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1,0,1,0)
+    label.Size = UDim2.new(1, 0, 1, 0)
     label.BackgroundTransparency = 1
-    label.Text = "🔨 АДМИН"
-    label.TextColor3 = Color3.fromRGB(255,255,0)
+    label.Text = "⚠️ СЕРВЕР ВЗЛОМАН! ВСЕ ДАННЫЕ СЛИТЫ! ⚠️"
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.TextScaled = true
     label.Font = Enum.Font.GothamBold
     label.Parent = gui
-    hammerPart = part
-    local conn
-    conn = RunService.Heartbeat:Connect(function()
-        if character and character:FindFirstChild("Head") then
-            part.Position = character.Head.Position + Vector3.new(0, 3.5, 0)
-        else
-            part:Destroy()
-            conn:Disconnect()
-        end
-    end)
+    redSkyPart = part
+    sendGlobalChat("🔥 " .. player.Name .. " АКТИВИРОВАЛ КРАСНОЕ НЕБО!")
 end
-CreateHammer()
 
 -- ============================================================
--- 11. GUI (без изменений, адаптировано под телефон)
+-- МУЗЫКА (СВОЙ ТРЕК)
 -- ============================================================
-local gui = Instance.new("ScreenGui")
-gui.Name = "RyzenXeno"
-gui.ResetOnSpawn = false
-gui.Parent = player.PlayerGui
+local music = nil
+local function globalMusic()
+    if music then
+        music:Destroy()
+        music = nil
+        sendGlobalChat("🔇 " .. player.Name .. " ВЫКЛЮЧИЛ МУЗЫКУ")
+        return
+    end
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://9120386436"  -- ЗАМЕНИ НА СВОЙ ID
+    sound.Volume = 0.8
+    sound.Looped = true
+    sound.Parent = Workspace
+    pcall(function() sound:Play() end)
+    music = sound
+    sendGlobalChat("🎵 " .. player.Name .. " ВКЛЮЧИЛ МУЗЫКУ!")
+end
 
-local btn = Instance.new("TextButton")
-btn.Size = UDim2.new(0, 55, 0, 55)
-btn.Position = UDim2.new(1, -65, 0.9, -30)
-btn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-btn.Text = "🎃"
-btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-btn.TextScaled = true
-btn.Font = Enum.Font.GothamBold
-btn.BorderSizePixel = 2
-btn.BorderColor3 = Color3.fromRGB(255, 255, 255)
-btn.Parent = gui
+-- ============================================================
+-- СПАМ В ЧАТ (15 сообщений)
+-- ============================================================
+local function globalSpam()
+    for i = 1, 15 do
+        sendGlobalChat("🔥 " .. player.Name .. " — ХАКЕР! ВСЕ ЛОХИ!")
+        task.wait(0.3)
+    end
+end
 
-local menu = Instance.new("Frame")
-menu.Size = UDim2.new(0, 260, 0, 380)
-menu.Position = UDim2.new(0.5, -130, 0.5, -190)
-menu.BackgroundColor3 = Color3.fromRGB(10, 10, 25)
-menu.BackgroundTransparency = 0.1
-menu.BorderSizePixel = 2
-menu.BorderColor3 = Color3.fromRGB(255, 0, 100)
-menu.Visible = false
-menu.ClipsDescendants = true
-menu.Parent = gui
+-- ============================================================
+-- МЕГА-ВЗЛОМ (ВСЁ ВМЕСТЕ)
+-- ============================================================
+local function megaHack()
+    globalRedSky()
+    task.wait(0.5)
+    globalSiren()
+    task.wait(0.5)
+    globalTag()
+    task.wait(0.5)
+    globalTeleport()
+    task.wait(0.5)
+    globalKill()
+    task.wait(0.5)
+    globalSpam()
+    task.wait(0.5)
+    globalMusic()
+    sendGlobalChat("💎 " .. player.Name .. " АКТИВИРОВАЛ МЕГА-ВЗЛОМ! ВСЕ УНИЧТОЖЕНЫ!")
+end
 
+-- ============================================================
+-- 3. РЕГИСТРИРУЕМ КОМАНДЫ В IY (через addcmd)
+-- ============================================================
+-- Проверяем, что функция addcmd существует (она создаётся после загрузки IY)
+if type(addcmd) == "function" then
+    addcmd('megahack', {}, megaHack, nil)
+    addcmd('siren', {}, globalSiren, nil)
+    addcmd('tagall', {}, globalTag, nil)
+    addcmd('killall', {}, globalKill, nil)
+    addcmd('tptocenter', {}, globalTeleport, nil)
+    addcmd('redsky', {}, globalRedSky, nil)
+    addcmd('music', {}, globalMusic, nil)
+    addcmd('spamglobal', {}, globalSpam, nil)
+    print("✅ Глобальные команды добавлены в IY!")
+else
+    print("⚠️ addcmd не найдена! Команды не зарегистрированы.")
+end
+
+-- ============================================================
+-- 4. ДОБАВЛЯЕМ ГУИ (КНОПКА С МЕНЮ)
+-- ============================================================
+-- Создаём отдельный GUI поверх IY, чтобы не мешать его работе.
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "RyzenXenoGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player.PlayerGui
+
+-- Кнопка открытия меню (красная тыква)
+local openBtn = Instance.new("TextButton")
+openBtn.Size = UDim2.new(0, 55, 0, 55)
+openBtn.Position = UDim2.new(1, -65, 0.9, -30)
+openBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+openBtn.Text = "🎃"
+openBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+openBtn.TextScaled = true
+openBtn.Font = Enum.Font.GothamBold
+openBtn.BorderSizePixel = 2
+openBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+openBtn.Parent = screenGui
+
+-- Меню
+local menuFrame = Instance.new("Frame")
+menuFrame.Size = UDim2.new(0, 260, 0, 350)
+menuFrame.Position = UDim2.new(0.5, -130, 0.5, -175)
+menuFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 25)
+menuFrame.BackgroundTransparency = 0.1
+menuFrame.BorderSizePixel = 2
+menuFrame.BorderColor3 = Color3.fromRGB(255, 0, 100)
+menuFrame.Visible = false
+menuFrame.ClipsDescendants = true
+menuFrame.Parent = screenGui
+
+-- Заголовок
 local header = Instance.new("Frame")
 header.Size = UDim2.new(1, 0, 0, 30)
 header.BackgroundColor3 = Color3.fromRGB(200, 0, 50)
-header.Parent = menu
+header.Parent = menuFrame
 
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -30, 1, 0)
@@ -313,68 +290,70 @@ title.Font = Enum.Font.GothamBold
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = header
 
-local close = Instance.new("TextButton")
-close.Size = UDim2.new(0, 25, 0, 25)
-close.Position = UDim2.new(1, -30, 0, 3)
-close.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-close.Text = "✕"
-close.TextColor3 = Color3.fromRGB(255, 255, 255)
-close.TextScaled = true
-close.Font = Enum.Font.GothamBold
-close.Parent = header
-close.MouseButton1Click:Connect(function() menu.Visible = false end)
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 25, 0, 25)
+closeBtn.Position = UDim2.new(1, -30, 0, 3)
+closeBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+closeBtn.Text = "✕"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.TextScaled = true
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.Parent = header
+closeBtn.MouseButton1Click:Connect(function() menuFrame.Visible = false end)
 
+-- Скролл для кнопок
 local scroll = Instance.new("ScrollingFrame")
 scroll.Size = UDim2.new(1, -10, 1, -40)
 scroll.Position = UDim2.new(0, 5, 0, 35)
 scroll.BackgroundTransparency = 1
 scroll.ScrollBarThickness = 4
-scroll.Parent = menu
+scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+scroll.Parent = menuFrame
 
-local y = 5
+local yPos = 5
 local function AddButton(text, color, func)
-    local b = Instance.new("TextButton")
-    b.Size = UDim2.new(1, -10, 0, 34)
-    b.Position = UDim2.new(0, 5, 0, y)
-    b.BackgroundColor3 = color
-    b.BackgroundTransparency = 0.2
-    b.Text = text
-    b.TextColor3 = Color3.fromRGB(255, 255, 255)
-    b.TextScaled = true
-    b.Font = Enum.Font.Gotham
-    b.Parent = scroll
-    b.MouseButton1Click:Connect(func)
-    y = y + 39
-    scroll.CanvasSize = UDim2.new(0, 0, 0, y + 10)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -10, 0, 32)
+    btn.Position = UDim2.new(0, 5, 0, yPos)
+    btn.BackgroundColor3 = color
+    btn.BackgroundTransparency = 0.2
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextScaled = true
+    btn.Font = Enum.Font.Gotham
+    btn.Parent = scroll
+    btn.MouseButton1Click:Connect(func)
+    yPos = yPos + 37
+    scroll.CanvasSize = UDim2.new(0, 0, 0, yPos + 10)
+    return btn
 end
 
-AddButton("🔊 СИРЕНА", Color3.fromRGB(200,0,0), GlobalSiren)
-AddButton("👾 ТЕГ ВСЕМ", Color3.fromRGB(150,0,150), GlobalTag)
-AddButton("💀 УБИТЬ ВСЕХ", Color3.fromRGB(255,0,0), GlobalKill)
-AddButton("🌀 ТЕЛЕПОРТ ВСЕХ", Color3.fromRGB(200,150,0), GlobalTeleport)
-AddButton("🎵 МУЗЫКА (ВКЛ/ВЫКЛ)", Color3.fromRGB(0,150,200), GlobalMusic)
-AddButton("💬 СПАМ (15)", Color3.fromRGB(200,100,0), GlobalSpam)
-AddButton("💎 МЕГА-ВЗЛОМ (КРАСНОЕ НЕБО)", Color3.fromRGB(255,0,200), MegaHack)
-AddButton("❌ ЗАКРЫТЬ", Color3.fromRGB(100,100,100), function() menu.Visible = false end)
+AddButton("🔊 СИРЕНА", Color3.fromRGB(200,0,0), globalSiren)
+AddButton("👾 ТЕГ ВСЕМ", Color3.fromRGB(150,0,150), globalTag)
+AddButton("💀 УБИТЬ ВСЕХ", Color3.fromRGB(255,0,0), globalKill)
+AddButton("🌀 ТЕЛЕПОРТ ВСЕХ", Color3.fromRGB(200,150,0), globalTeleport)
+AddButton("🎵 МУЗЫКА (ВКЛ/ВЫКЛ)", Color3.fromRGB(0,150,200), globalMusic)
+AddButton("💬 СПАМ", Color3.fromRGB(200,100,0), globalSpam)
+AddButton("🔥 КРАСНОЕ НЕБО", Color3.fromRGB(255,0,0), globalRedSky)
+AddButton("💎 МЕГА-ВЗЛОМ", Color3.fromRGB(255,0,200), megaHack)
+AddButton("❌ ЗАКРЫТЬ", Color3.fromRGB(100,100,100), function() menuFrame.Visible = false end)
 
-btn.MouseButton1Click:Connect(function()
-    menu.Visible = not menu.Visible
+openBtn.MouseButton1Click:Connect(function()
+    menuFrame.Visible = not menuFrame.Visible
 end)
 
-if UserInputService.TouchEnabled then
-    btn.Size = UDim2.new(0, 70, 0, 70)
-    btn.Position = UDim2.new(1, -80, 0.85, -35)
-    menu.Size = UDim2.new(0, 300, 0, 420)
-    menu.Position = UDim2.new(0.5, -150, 0.4, -210)
+-- Адаптация под телефон (увеличение кнопок)
+if game:GetService("UserInputService").TouchEnabled then
+    openBtn.Size = UDim2.new(0, 70, 0, 70)
+    openBtn.Position = UDim2.new(1, -80, 0.85, -35)
+    menuFrame.Size = UDim2.new(0, 300, 0, 400)
+    menuFrame.Position = UDim2.new(0.5, -150, 0.4, -200)
 end
 
 -- ============================================================
--- 12. АВТОЗАПУСК
+-- 5. АВТОМАТИЧЕСКИЙ ЗАПУСК ПРИ СТАРТЕ (ОПЦИОНАЛЬНО)
 -- ============================================================
-task.wait(1)
-SendGlobalChat("🎃 " .. player.Name .. " АКТИВИРОВАЛ RYZEN XENO v9.2!")
-SendGlobalChat("🔥 ИЩУ ГЛОБАЛЬНЫЕ СОБЫТИЯ...")
-
-print("✅ СКРИПТ ЗАПУЩЕН! НАЖМИ 🎃 ДЛЯ МЕНЮ.")
-print("💡 Если эффекты не видны другим – игра не имеет нужных RemoteEvents.")
-print("💡 Попробуйте использовать команды в чате (например, /kill all) – они могут сработать.")
+task.wait(2)
+sendGlobalChat("🎃 " .. player.Name .. " АКТИВИРОВАЛ RYZEN XENO + INFINITE YIELD!")
+print("✅ СКРИПТ ЗАГРУЖЕН! НАЖМИ 🎃 ДЛЯ МЕНЮ.")
+print("💡 ВСЕ КОМАНДЫ IY ДОСТУПНЫ ЧЕРЕЗ ПРЕФИКС ';' (по умолчанию)")
