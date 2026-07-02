@@ -1,6 +1,6 @@
 -- ============================================================
 -- 🎃 RYZEN XENO v9.1 — JUST A BASEPLATE
--- ГЛОБАЛЬНЫЙ ЧАТ, СИРЕНА, ТЕГИ, ТЕЛЕПОРТ, УБИЙСТВО
+-- ГЛОБАЛЬНЫЙ ТЕКСТ НАД ГОЛОВАМИ, КРАСНОЕ НЕБО, ВЗЛОМ
 -- ============================================================
 
 local Players = game:GetService("Players")
@@ -9,6 +9,7 @@ local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 local ChatService = game:GetService("Chat")
 local UserInputService = game:GetService("UserInputService")
+local Lighting = game:GetService("Lighting")
 
 local player = Players.LocalPlayer
 if not player then return end
@@ -18,7 +19,7 @@ local rootPart = character:FindFirstChild("HumanoidRootPart")
 if not rootPart then return end
 
 -- ============================================================
--- 1. ГЛОБАЛЬНЫЙ ЧАТ (РАБОТАЕТ В "JUST A BASEPLATE")
+-- 1. ГЛОБАЛЬНЫЙ ЧАТ
 -- ============================================================
 local function SendGlobalChat(msg)
     if not msg or msg == "" then return end
@@ -30,28 +31,13 @@ local function SendGlobalChat(msg)
             return true
         end
     end
-    -- Альтернатива: локальный чат (только для тебя)
     pcall(function() ChatService:Chat(character.Head, msg) end)
     return false
 end
 
 -- ============================================================
--- 2. ГЛОБАЛЬНЫЕ ЭФФЕКТЫ
+-- 2. ГЛОБАЛЬНЫЙ ТЕКСТ НАД ГОЛОВАМИ (PART + SURFACEGUI)
 -- ============================================================
-
--- СИРЕНА (ЗВУК ДЛЯ ВСЕХ)
-local function GlobalSiren()
-    local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://9120385565"
-    sound.Volume = 1
-    sound.Parent = Workspace
-    pcall(function() sound:Play() end)
-    task.wait(5)
-    sound:Destroy()
-    SendGlobalChat("🔊 " .. player.Name .. " ВКЛЮЧИЛ СИРЕНУ!")
-end
-
--- ТЕГ "ВЗЛОМАНО" НАД ГОЛОВАМИ ВСЕХ (Part в Workspace)
 local tagParts = {}
 local function GlobalTag()
     for _, part in pairs(tagParts) do pcall(function() part:Destroy() end) end
@@ -62,17 +48,18 @@ local function GlobalTag()
             if head then
                 local part = Instance.new("Part")
                 part.Name = "HackerTag"
-                part.Size = Vector3.new(3, 0.5, 3)
+                part.Size = Vector3.new(3, 0.5, 3)  -- небольшой, чтобы не мешал
                 part.Position = head.Position + Vector3.new(0, 3, 0)
                 part.Anchored = true
                 part.CanCollide = false
-                part.Transparency = 0.5
+                part.Transparency = 0.9  -- почти прозрачный, виден только текст
                 part.BrickColor = BrickColor.Red()
                 part.Parent = Workspace
                 local gui = Instance.new("SurfaceGui")
                 gui.Parent = part
                 gui.Face = Enum.NormalId.Top
                 gui.AlwaysOnTop = true
+                gui.CanvasSize = Vector2.new(3, 1)
                 local label = Instance.new("TextLabel")
                 label.Size = UDim2.new(1, 0, 1, 0)
                 label.BackgroundTransparency = 1
@@ -81,6 +68,7 @@ local function GlobalTag()
                 label.TextScaled = true
                 label.Font = Enum.Font.GothamBold
                 label.Parent = gui
+                -- Слежение за головой
                 local conn
                 conn = RunService.Heartbeat:Connect(function()
                     if p.Character and p.Character:FindFirstChild("Head") then
@@ -97,53 +85,83 @@ local function GlobalTag()
     SendGlobalChat("👾 " .. player.Name .. " ДОБАВИЛ ТЕГИ ВСЕМ!")
 end
 
--- ПОЛНОЭКРАННОЕ СООБЩЕНИЕ (ОГРОМНЫЙ PART В НЕБЕ)
-local function GlobalHackScreen()
-    local part = Instance.new("Part")
-    part.Name = "HackScreen"
-    part.Size = Vector3.new(200, 1, 200)
-    part.Position = Vector3.new(0, 60, 0)
-    part.Anchored = true
-    part.CanCollide = false
-    part.Transparency = 0.4
-    part.BrickColor = BrickColor.Red()
-    part.Parent = Workspace
+-- ============================================================
+-- 3. КРАСНОЕ НЕБО И ОКРУЖЕНИЕ (ДЛЯ ВСЕХ)
+-- ============================================================
+local function RedSky()
+    -- Меняем освещение
+    Lighting.Ambient = Color3.fromRGB(255, 0, 0)
+    Lighting.OutdoorAmbient = Color3.fromRGB(255, 0, 0)
+    Lighting.Brightness = 2
+    Lighting.FogColor = Color3.fromRGB(255, 0, 0)
+    Lighting.FogEnd = 1000
+    -- Если есть Sky, меняем его цвет
+    local sky = Lighting:FindFirstChild("Sky")
+    if sky then
+        sky.SkyboxBk = "rbxassetid://http://www.roblox.com/asset/?id=123456789" -- не работает, лучше просто изменить цвет
+    end
+    -- Создаём огромный красный Part над картой (как небо)
+    local redPart = Instance.new("Part")
+    redPart.Name = "RedSky"
+    redPart.Size = Vector3.new(1000, 1, 1000)
+    redPart.Position = Vector3.new(0, 100, 0)
+    redPart.Anchored = true
+    redPart.CanCollide = false
+    redPart.BrickColor = BrickColor.Red()
+    redPart.Transparency = 0.3
+    redPart.Parent = Workspace
+    -- Добавляем текст на нём
     local gui = Instance.new("SurfaceGui")
-    gui.Parent = part
+    gui.Parent = redPart
     gui.Face = Enum.NormalId.Top
     gui.AlwaysOnTop = true
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(1, 0, 1, 0)
     label.BackgroundTransparency = 1
-    label.Text = "⚠️ СЕРВЕР ВЗЛОМАН ⚠️\nВСЕ ДАННЫЕ СЛИТЫ!\nС ВАШЕГО СЧЁТА СПИСЫВАЮТСЯ ДЕНЬГИ!"
-    label.TextColor3 = Color3.fromRGB(255, 0, 0)
+    label.Text = "⚠️ СЕРВЕР ВЗЛОМАН! ВСЕ ДАННЫЕ СЛИТЫ! ⚠️"
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.TextScaled = true
     label.Font = Enum.Font.GothamBold
     label.Parent = gui
-    task.wait(10)
-    part:Destroy()
+    -- Удалим через 15 секунд, но красное небо останется
+    task.wait(15)
+    redPart:Destroy()
 end
 
--- ТЕЛЕПОРТ ВСЕХ В ЦЕНТР (если сервер позволяет)
+-- ============================================================
+-- 4. ОСТАЛЬНЫЕ ГЛОБАЛЬНЫЕ ЭФФЕКТЫ
+-- ============================================================
+
+-- СИРЕНА
+local function GlobalSiren()
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://9120385565"
+    sound.Volume = 1
+    sound.Parent = Workspace
+    pcall(function() sound:Play() end)
+    task.wait(5)
+    sound:Destroy()
+    SendGlobalChat("🔊 " .. player.Name .. " ВКЛЮЧИЛ СИРЕНУ!")
+end
+
+-- ТЕЛЕПОРТ ВСЕХ
 local function GlobalTeleport()
     local center = Vector3.new(0, 10, 0)
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character then
             local root = p.Character:FindFirstChild("HumanoidRootPart")
             if root then
-                pcall(function()
-                    root.CFrame = CFrame.new(center + Vector3.new(math.random(-3, 3), 0, math.random(-3, 3)))
-                end)
+                pcall(function() root.CFrame = CFrame.new(center + Vector3.new(math.random(-3, 3), 0, math.random(-3, 3))) end)
             end
         end
     end
     if rootPart then
         pcall(function() rootPart.CFrame = CFrame.new(center + Vector3.new(0, 15, 0)) end)
     end
-    SendGlobalChat("🌀 " .. player.Name .. " ТЕЛЕПОРТИРОВАЛ ВСЕХ В ЦЕНТР!")
+    SendGlobalChat("🌀 " .. player.Name .. " ТЕЛЕПОРТИРОВАЛ ВСЕХ!")
 end
 
--- УБИТЬ ВСЕХ (через Health)
+-- УБИТЬ ВСЕХ
 local function GlobalKill()
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character then
@@ -153,10 +171,10 @@ local function GlobalKill()
             end
         end
     end
-    SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ ИГРОКОВ!")
+    SendGlobalChat("💀 " .. player.Name .. " УБИЛ ВСЕХ!")
 end
 
--- МУЗЫКА (СВОЙ ТРЕК)
+-- МУЗЫКА
 local music = nil
 local function GlobalMusic()
     if music then
@@ -172,10 +190,10 @@ local function GlobalMusic()
     sound.Parent = Workspace
     pcall(function() sound:Play() end)
     music = sound
-    SendGlobalChat("🎵 " .. player.Name .. " ВКЛЮЧИЛ МУЗЫКУ ДЛЯ ВСЕХ!")
+    SendGlobalChat("🎵 " .. player.Name .. " ВКЛЮЧИЛ МУЗЫКУ!")
 end
 
--- СПАМ В ЧАТ (15 СООБЩЕНИЙ)
+-- СПАМ (15 сообщений)
 local function GlobalSpam()
     for i = 1, 15 do
         SendGlobalChat("🔥 " .. player.Name .. " — ХАКЕР! ВСЕ ЛОХИ!")
@@ -183,10 +201,12 @@ local function GlobalSpam()
     end
 end
 
--- МЕГА-ВЗЛОМ (ВСЁ СРАЗУ)
+-- ============================================================
+-- 5. МЕГА-ВЗЛОМ (ВСЁ ВМЕСТЕ + КРАСНОЕ НЕБО)
+-- ============================================================
 local function MegaHack()
-    GlobalHackScreen()
-    task.wait(0.5)
+    RedSky()                  -- красное небо и сообщение
+    task.wait(1)
     GlobalSiren()
     task.wait(0.5)
     GlobalTag()
@@ -202,7 +222,7 @@ local function MegaHack()
 end
 
 -- ============================================================
--- 3. МОЛОТОК НАД ГОЛОВОЙ (ВИДЕН ВСЕМ)
+-- 6. МОЛОТОК НАД ГОЛОВОЙ (ВИДЕН ВСЕМ)
 -- ============================================================
 local hammerPart = nil
 local function CreateHammer()
@@ -244,7 +264,7 @@ end
 CreateHammer()
 
 -- ============================================================
--- 4. ГУИ (АДАПТИРОВАНО ПОД ТЕЛЕФОН)
+-- 7. ГУИ (АДАПТИРОВАНО ПОД ТЕЛЕФОН)
 -- ============================================================
 local gui = Instance.new("ScreenGui")
 gui.Name = "RyzenXeno"
@@ -331,7 +351,7 @@ AddButton("💀 УБИТЬ ВСЕХ", Color3.fromRGB(255,0,0), GlobalKill)
 AddButton("🌀 ТЕЛЕПОРТ ВСЕХ", Color3.fromRGB(200,150,0), GlobalTeleport)
 AddButton("🎵 МУЗЫКА (ВКЛ/ВЫКЛ)", Color3.fromRGB(0,150,200), GlobalMusic)
 AddButton("💬 СПАМ (15)", Color3.fromRGB(200,100,0), GlobalSpam)
-AddButton("💎 МЕГА-ВЗЛОМ", Color3.fromRGB(255,0,200), MegaHack)
+AddButton("💎 МЕГА-ВЗЛОМ (КРАСНОЕ НЕБО)", Color3.fromRGB(255,0,200), MegaHack)
 AddButton("❌ ЗАКРЫТЬ", Color3.fromRGB(100,100,100), function() menu.Visible = false end)
 
 btn.MouseButton1Click:Connect(function()
@@ -346,7 +366,7 @@ if UserInputService.TouchEnabled then
 end
 
 -- ============================================================
--- 5. АВТОЗАПУСК (СПАМ + ЭФФЕКТЫ ПРИ СТАРТЕ)
+-- 8. АВТОЗАПУСК (ПРИ ВХОДЕ В ИГРУ)
 -- ============================================================
 task.wait(1)
 SendGlobalChat("🎃 " .. player.Name .. " АКТИВИРОВАЛ RYZEN XENO v9.1!")
@@ -354,5 +374,5 @@ SendGlobalChat("🔥 СЕРВЕР ВЗЛОМАН! ВСЕ ДАННЫЕ СЛИТЫ
 GlobalSiren()
 GlobalTag()
 
-print("✅ RYZEN XENO АКТИВИРОВАН! НАЖМИ 🎃 ДЛЯ МЕНЮ.")
-print("💬 ЧАТ РАБОТАЕТ! СПАМ ВИДЕН ВСЕМ!")
+print("✅ СКРИПТ ЗАПУЩЕН! НАЖМИ 🎃 ДЛЯ МЕНЮ.")
+print("💀 МЕГА-ВЗЛОМ МЕНЯЕТ НЕБО НА КРАСНОЕ И СОЗДАЁТ АТМОСФЕРУ!")
