@@ -1,7 +1,6 @@
 -- ============================================================
--- 🎃 RYZEN XENO v9.1 — ХАКЕРСКИЙ СКРИПТ
--- Все видят твой ник с тегом [ХАКЕР]
--- Доступ ко всем командам
+-- 🎃 RYZEN XENO v9.1 — ГЛОБАЛЬНИЙ ХАКЕРСЬКИЙ СКРИПТ
+-- Автор: ghhl7 | Для всіх платформ (ПК + Мобільний)
 -- ============================================================
 
 local Players = game:GetService("Players")
@@ -10,320 +9,297 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local ChatService = game:GetService("Chat")
+local StarterGui = game:GetService("StarterGui")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 
 -- ============================================================
--- 1. ПОКАЗЫВАЕМ ВСЕМ НИК С ТЕГОМ [ХАКЕР]
+-- 1. ФУНКЦІЇ ДЛЯ ВІДПРАВКИ ПОВІДОМЛЕНЬ У ЧАТ (ГЛОБАЛЬНО)
 -- ============================================================
-local function addHackerTag()
-    -- Создаём BillboardGui над головой
-    local tagGui = Instance.new("BillboardGui")
-    tagGui.Name = "HackerTag"
-    tagGui.Size = UDim2.new(0, 250, 0, 40)
-    tagGui.Adornee = character:WaitForChild("Head")
-    tagGui.StudsOffset = Vector3.new(0, 2.5, 0)
-    tagGui.MaxDistance = 100
-    tagGui.AlwaysOnTop = true
-    tagGui.Parent = character
+local function sendGlobalMessage(msg)
+    local chatEvent = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+    if chatEvent then
+        local sayMessage = chatEvent:FindFirstChild("SayMessageRequest")
+        if sayMessage then
+            sayMessage:FireServer(msg, "All")
+            return true
+        end
+    end
+    -- Альтернативний метод (якщо гра використовує іншу систему)
+    local remote = ReplicatedStorage:FindFirstChild("RemoteEvent")
+    if remote then
+        remote:FireServer("Chat", msg)
+        return true
+    end
+    return false
+end
 
-    -- Фрейм для тега
+-- ============================================================
+-- 2. СТВОРЕННЯ ТЕГУ [ХАКЕР] НАД ГОЛОВОЮ (ДЛЯ ВСІХ)
+-- ============================================================
+local function addHackerTagToPlayer(targetPlayer)
+    if not targetPlayer or not targetPlayer.Character then return end
+    local char = targetPlayer.Character
+    local head = char:FindFirstChild("Head")
+    if not head then return end
+    if head:FindFirstChild("HackerTag") then return end
+
+    local bill = Instance.new("BillboardGui")
+    bill.Name = "HackerTag"
+    bill.Size = UDim2.new(0, 250, 0, 40)
+    bill.Adornee = head
+    bill.StudsOffset = Vector3.new(0, 2.5, 0)
+    bill.MaxDistance = 150
+    bill.AlwaysOnTop = true
+    bill.Parent = head
+
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, 0, 1, 0)
     frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     frame.BackgroundTransparency = 0.3
     frame.BorderSizePixel = 2
     frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
-    frame.Parent = tagGui
+    frame.Parent = bill
 
-    -- Текст "ХАКЕР"
-    local hackerText = Instance.new("TextLabel")
-    hackerText.Size = UDim2.new(1, 0, 0.6, 0)
-    hackerText.Position = UDim2.new(0, 0, 0, 0)
-    hackerText.BackgroundTransparency = 1
-    hackerText.Text = "⚠️ ХАКЕР ⚠️"
-    hackerText.TextColor3 = Color3.fromRGB(255, 0, 0)
-    hackerText.TextScaled = true
-    hackerText.Font = Enum.Font.GothamBold
-    hackerText.Parent = frame
+    local text = Instance.new("TextLabel")
+    text.Size = UDim2.new(1, 0, 1, 0)
+    text.BackgroundTransparency = 1
+    text.Text = "⚠️ ВЗЛОМАНО ⚠️"
+    text.TextColor3 = Color3.fromRGB(255, 0, 0)
+    text.TextScaled = true
+    text.Font = Enum.Font.GothamBold
+    text.Parent = frame
 
-    -- Ник игрока
-    local nameText = Instance.new("TextLabel")
-    nameText.Size = UDim2.new(1, 0, 0.4, 0)
-    nameText.Position = UDim2.new(0, 0, 0.6, 0)
-    nameText.BackgroundTransparency = 1
-    nameText.Text = player.Name .. " [ХАКЕР]"
-    nameText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    nameText.TextScaled = true
-    nameText.Font = Enum.Font.Gotham
-    nameText.Parent = frame
-
-    -- Анимация свечения
-    local glow = Instance.new("UIGradient")
-    glow.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 0)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
-    })
-    glow.Parent = frame
-
-    print("✅ Тег [ХАКЕР] добавлен! Все видят!")
+    -- Анімація пульсації
+    task.spawn(function()
+        while bill.Parent do
+            for i = 0, 1, 0.1 do
+                text.TextTransparency = i
+                task.wait(0.05)
+            end
+            for i = 1, 0, -0.1 do
+                text.TextTransparency = i
+                task.wait(0.05)
+            end
+        end
+    end)
 end
 
--- Добавляем тег каждому новому персонажу
-addHackerTag()
-
-player.CharacterAdded:Connect(function(newChar)
-    character = newChar
-    humanoid = character:WaitForChild("Humanoid")
-    wait(0.5)
-    addHackerTag()
-end)
-
--- ============================================================
--- 2. ОПОВЕЩЕНИЕ ВСЕХ О ВЗЛОМЕ (ЧАТ)
--- ============================================================
-local function sendHackMessage()
-    local chatEvent = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
-    local sayMessage = chatEvent and chatEvent:FindFirstChild("SayMessageRequest")
-    
-    if sayMessage then
-        local messages = {
-            "⚠️ ВНИМАНИЕ! СЕРВЕР ВЗЛОМАН!",
-            "🔴 АДМИНИСТРАТОРЫ ПОТЕРЯЛИ КОНТРОЛЬ!",
-            "🎃 ХАКЕР " .. player.Name .. " ВЗЯЛ ВЛАСТЬ!",
-            "🔥 ВСЕ ДАННЫЕ СЛИТЫ!",
-            "💀 ТЕПЕРЬ Я ЗДЕСЬ ГЛАВНЫЙ!",
-        }
-        for _, msg in ipairs(messages) do
-            task.wait(1)
-            sayMessage:FireServer(msg, "All")
-        end
-    else
-        -- Альтернатива: локальный чат
-        ChatService:Chat(character, "⚠️ СЕРВЕР ВЗЛОМАН! ⚠️")
-        print("⚠️ Сообщение только локальное")
+-- Додаємо тег усім гравцям (включаючи нових)
+local function addTagsToAll()
+    for _, p in pairs(Players:GetPlayers()) do
+        addHackerTagToPlayer(p)
     end
 end
 
-sendHackMessage()
+addTagsToAll()
+
+Players.PlayerAdded:Connect(function(p)
+    p.CharacterAdded:Connect(function()
+        task.wait(0.5)
+        addHackerTagToPlayer(p)
+    end)
+end)
 
 -- ============================================================
--- 3. ГУИ С АДМИН-КОМАНДАМИ (ДОСТУП КО ВСЕМУ)
+-- 3. СПАМ У ГЛОБАЛЬНИЙ ЧАТ (РОСІЙСЬКОЮ ТА АНГЛІЙСЬКОЮ)
 -- ============================================================
-local function createAdminGUI()
+local spamActive = false
+local spamTask = nil
+
+local function startSpam()
+    if spamActive then return end
+    spamActive = true
+    spamTask = task.spawn(function()
+        local messages = {
+            "⚠️ ВНИМАНИЕ! СЕРВЕР ВЗЛОМАН! ⚠️",
+            "🔴 ВСЕ ДАННЫЕ СЛИТЫ! АДМИНЫ ПОТЕРЯЛИ КОНТРОЛЬ!",
+            "🎃 ХАКЕР " .. player.Name .. " ВЗЯЛ ВЛАСТЬ!",
+            "🔥 WARNING! SERVER HACKED! 🔥",
+            "💀 ALL DATA LEAKED! ADMIN LOST CONTROL!",
+            "👾 HACKER " .. player.Name .. " IS IN CONTROL!",
+            "⚠️ СЕРВЕР ЗАХВАЧЕН! ВСЕ ПОДЧИНЯЙТЕСЬ!",
+            "🤖 SYSTEM COMPROMISED! EVACUATE IMMEDIATELY!"
+        }
+        local index = 1
+        while spamActive do
+            local msg = messages[index]
+            if msg then
+                local success = sendGlobalMessage(msg)
+                if not success then
+                    -- Якщо не вийшло, пробуємо локальний чат (тільки для нас)
+                    ChatService:Chat(character, msg)
+                end
+            end
+            index = index % #messages + 1
+            task.wait(2) -- Інтервал між повідомленнями
+        end
+    end)
+end
+
+local function stopSpam()
+    spamActive = false
+    if spamTask then
+        task.cancel(spamTask)
+        spamTask = nil
+    end
+end
+
+-- ============================================================
+-- 4. ЕФЕКТИ "ВЗЛОМУ" (ДЛЯ ВСІХ)
+-- ============================================================
+local function createHackEffects()
+    -- Створюємо вибух світла
+    local light = Instance.new("PointLight")
+    light.Parent = character.HumanoidRootPart
+    light.Color = Color3.fromRGB(255, 0, 0)
+    light.Range = 50
+    light.Brightness = 5
+
+    -- Створюємо частинки (дощ зірок)
+    local particles = Instance.new("ParticleEmitter")
+    particles.Parent = character.HumanoidRootPart
+    particles.Texture = "rbxassetid://7171323311"
+    particles.Rate = 100
+    particles.SpreadAngle = Vector2.new(360, 360)
+    particles.Lifetime = NumberRange.new(2)
+    particles.Speed = NumberRange.new(20)
+    particles.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+    particles.Transparency = NumberSequence.new(0.5)
+
+    -- Видаляємо через 5 секунд
+    task.wait(5)
+    light:Destroy()
+    particles:Destroy()
+end
+
+-- ============================================================
+-- 5. МОБІЛЬНЕ МЕНЮ (АДАПТИВНЕ)
+-- ============================================================
+local function createMobileMenu()
     local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "HackerGUI"
+    screenGui.Name = "HackerMenu"
+    screenGui.ResetOnSpawn = false
     screenGui.Parent = player.PlayerGui
 
-    -- Основное окно
-    local mainFrame = Instance.new("Frame")
-    mainFrame.Size = UDim2.new(0, 350, 0, 450)
-    mainFrame.Position = UDim2.new(0, 10, 0.5, -225)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
-    mainFrame.BackgroundTransparency = 0.1
-    mainFrame.BorderSizePixel = 3
-    mainFrame.BorderColor3 = Color3.fromRGB(255, 0, 0)
-    mainFrame.Visible = false
-    mainFrame.Parent = screenGui
+    -- Головна кнопка (завжди видима)
+    local mainBtn = Instance.new("TextButton")
+    mainBtn.Size = UDim2.new(0, 60, 0, 60)
+    mainBtn.Position = UDim2.new(1, -75, 0.85, -30)
+    mainBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    mainBtn.Text = "🎃"
+    mainBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    mainBtn.TextScaled = true
+    mainBtn.Font = Enum.Font.GothamBold
+    mainBtn.BorderSizePixel = 2
+    mainBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    mainBtn.ZIndex = 10
+    mainBtn.Parent = screenGui
+
+    -- Меню (спочатку приховане)
+    local menuFrame = Instance.new("Frame")
+    menuFrame.Size = UDim2.new(0, 300, 0, 350)
+    menuFrame.Position = UDim2.new(0.5, -150, 0.5, -175)
+    menuFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
+    menuFrame.BackgroundTransparency = 0.1
+    menuFrame.BorderSizePixel = 3
+    menuFrame.BorderColor3 = Color3.fromRGB(255, 0, 0)
+    menuFrame.Visible = false
+    menuFrame.Active = true
+    menuFrame.Draggable = true
+    menuFrame.ZIndex = 20
+    menuFrame.Parent = screenGui
 
     -- Заголовок
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 40)
+    title.Size = UDim2.new(1, 0, 0, 35)
     title.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     title.Text = "🎃 ХАКЕР-ПАНЕЛЬ"
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
     title.TextScaled = true
     title.Font = Enum.Font.GothamBold
-    title.Parent = mainFrame
+    title.Parent = menuFrame
 
-    -- Кнопка закрыть
+    -- Кнопка закриття
     local closeBtn = Instance.new("TextButton")
     closeBtn.Size = UDim2.new(0, 30, 0, 30)
-    closeBtn.Position = UDim2.new(1, -35, 0, 5)
+    closeBtn.Position = UDim2.new(1, -35, 0, 3)
     closeBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
     closeBtn.Text = "✕"
     closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     closeBtn.TextScaled = true
     closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.Parent = mainFrame
+    closeBtn.Parent = menuFrame
     closeBtn.MouseButton1Click:Connect(function()
-        mainFrame.Visible = false
+        menuFrame.Visible = false
     end)
 
-    -- Контейнер для кнопок
+    -- Скролінг для кнопок
     local scroll = Instance.new("ScrollingFrame")
-    scroll.Size = UDim2.new(1, -10, 1, -55)
-    scroll.Position = UDim2.new(0, 5, 0, 45)
+    scroll.Size = UDim2.new(1, -10, 1, -45)
+    scroll.Position = UDim2.new(0, 5, 0, 40)
     scroll.BackgroundTransparency = 1
     scroll.ScrollBarThickness = 6
-    scroll.Parent = mainFrame
+    scroll.Parent = menuFrame
 
     local yPos = 5
-    local commands = {
-        {"🔥 Телепорт к игроку", function() 
-            local target = Players:GetPlayers()[math.random(2, #Players:GetPlayers())]
-            if target and target.Character then
-                character:MoveTo(target.Character.HumanoidRootPart.Position + Vector3.new(0, 3, 0))
-            end
-        end},
-        {"💀 Убить всех", function()
-            for _, p in pairs(Players:GetPlayers()) do
-                if p ~= player and p.Character and p.Character:FindFirstChild("Humanoid") then
-                    p.Character.Humanoid.Health = 0
-                end
-            end
-        end},
-        {"🔄 Отродить всех", function()
-            for _, p in pairs(Players:GetPlayers()) do
-                if p ~= player and p.Character and p.Character:FindFirstChild("Humanoid") then
-                    p.Character.Humanoid.Health = 100
-                end
-            end
-        end},
-        {"⚡ Скорость x5", function()
-            humanoid.WalkSpeed = humanoid.WalkSpeed * 5
-        end},
-        {"⚡ Скорость x10", function()
-            humanoid.WalkSpeed = humanoid.WalkSpeed * 10
-        end},
-        {"🛸 Режим полёта", function()
-            local bv = Instance.new("BodyVelocity")
-            bv.MaxForce = Vector3.new(1, 1, 1) * 1e9
-            bv.Velocity = Vector3.new(0, 50, 0)
-            bv.Parent = character:WaitForChild("HumanoidRootPart")
-        end},
-        {"🎯 NoClip", function()
-            for _, part in pairs(character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
-                end
-            end
-        end},
-        {"💣 Взорвать сервер (спам)", function()
-            for i = 1, 20 do
-                local p = Instance.new("Part")
-                p.Size = Vector3.new(5, 5, 5)
-                p.Position = Vector3.new(math.random(-100, 100), 50, math.random(-100, 100))
-                p.Anchored = true
-                p.BrickColor = BrickColor.Random()
-                p.Parent = workspace
-                task.wait(0.1)
-            end
-        end},
-        {"🌊 Потоп", function()
-            local water = Instance.new("Part")
-            water.Size = Vector3.new(1000, 10, 1000)
-            water.Position = Vector3.new(0, -5, 0)
-            water.Material = Enum.Material.Water
-            water.Anchored = true
-            water.Transparency = 0.5
-            water.Parent = workspace
-        end},
-        {"🧊 Заморозить всех", function()
-            for _, p in pairs(Players:GetPlayers()) do
-                if p ~= player and p.Character then
-                    local hum = p.Character:FindFirstChild("Humanoid")
-                    if hum then
-                        hum.WalkSpeed = 0
-                        hum.JumpPower = 0
-                    end
-                end
-            end
-        end},
-        {"💬 Спам в чат", function()
-            local chatEvent = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
-            local sayMessage = chatEvent and chatEvent:FindFirstChild("SayMessageRequest")
-            if sayMessage then
-                for i = 1, 30 do
-                    sayMessage:FireServer("🔥 ВСЕХ ВЗЛОМАЛ " .. player.Name .. "! 🔥", "All")
-                    task.wait(0.2)
-                end
-            end
-        end},
-        {"👾 Клонировать себя", function()
-            for i = 1, 5 do
-                local clone = character:Clone()
-                clone.Parent = workspace
-                clone:MoveTo(character.HumanoidRootPart.Position + Vector3.new(math.random(-10, 10), 0, math.random(-10, 10)))
-            end
-        end},
-        {"🎵 Включить музыку", function()
-            local sound = Instance.new("Sound")
-            sound.SoundId = "rbxassetid://9120385565"
-            sound.Volume = 1
-            sound.Parent = workspace
-            sound:Play()
-        end},
-    }
-
-    for _, cmd in ipairs(commands) do
+    local function addButton(text, color, callback)
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -10, 0, 35)
+        btn.Size = UDim2.new(1, -10, 0, 40)
         btn.Position = UDim2.new(0, 5, 0, yPos)
-        btn.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
-        btn.Text = cmd[1]
+        btn.BackgroundColor3 = color or Color3.fromRGB(30, 30, 50)
+        btn.Text = text
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.TextScaled = true
         btn.Font = Enum.Font.Gotham
         btn.Parent = scroll
-        btn.MouseButton1Click:Connect(cmd[2])
-        yPos = yPos + 40
+        btn.MouseButton1Click:Connect(callback)
+        yPos = yPos + 45
     end
-    scroll.CanvasSize = UDim2.new(0, 0, 0, yPos + 10)
 
-    -- Кнопка для открытия GUI (на экране)
-    local openBtn = Instance.new("TextButton")
-    openBtn.Size = UDim2.new(0, 50, 0, 50)
-    openBtn.Position = UDim2.new(1, -65, 0.9, -60)
-    openBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    openBtn.Text = "🎃"
-    openBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    openBtn.TextScaled = true
-    openBtn.Font = Enum.Font.GothamBold
-    openBtn.BorderSizePixel = 2
-    openBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
-    openBtn.Parent = screenGui
-
-    openBtn.MouseButton1Click:Connect(function()
-        mainFrame.Visible = not mainFrame.Visible
+    -- Кнопки меню
+    local spamState = false
+    addButton("💬 СПАМ У ЧАТ (ВКЛ/ВИКЛ)", Color3.fromRGB(200, 100, 0), function()
+        spamState = not spamState
+        if spamState then
+            startSpam()
+            btn.Text = "💬 СПАМ У ЧАТ (ВКЛ)"
+        else
+            stopSpam()
+            btn.Text = "💬 СПАМ У ЧАТ (ВИКЛ)"
+        end
     end)
 
-    print("✅ Хакер-панель создана! Нажми 🎃")
-    return screenGui
-end
-
-createAdminGUI()
-
--- ============================================================
--- 4. АВТОМАТИЧЕСКИЙ РЕЖИМ (ВСЕ ВИДЯТ, ЧТО ТЫ ХАКЕР)
--- ============================================================
--- Каждые 10 секунд спамим в чат, что ты хакер
-task.spawn(function()
-    while true do
-        task.wait(10)
-        local chatEvent = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
-        local sayMessage = chatEvent and chatEvent:FindFirstChild("SayMessageRequest")
-        if sayMessage then
-            sayMessage:FireServer("⚠️ " .. player.Name .. " — ХАКЕР! СЕРВЕР ВЗЛОМАН! ⚠️", "All")
+    addButton("👾 ВЗЛОМАТИ ВСІХ", Color3.fromRGB(200, 0, 0), function()
+        -- Додаємо теги всім, хто їх не має
+        addTagsToAll()
+        -- Ефекти
+        for _, p in pairs(Players:GetPlayers()) do
+            if p.Character then
+                local clone = p.Character:Clone()
+                clone.Parent = workspace
+                clone:MoveTo(p.Character.HumanoidRootPart.Position + Vector3.new(0, 10, 0))
+                task.wait(0.1)
+                clone:Destroy()
+            end
         end
-    end
-end)
+        -- Спам повідомлень про взлом
+        for i = 1, 5 do
+            sendGlobalMessage("💀 " .. player.Name .. " ВЗЛОМАВ СЕРВЕР! ВСІ ПІД КОНТРОЛЕМ! 💀")
+            task.wait(0.5)
+        end
+        createHackEffects()
+        print("🎃 ВСІХ ВЗЛОМАНО!")
+    end)
 
--- ============================================================
--- 5. ДОПОЛНИТЕЛЬНО: МИГАЮЩИЙ ТЕКСТ "ВЗЛОМАНО" ДЛЯ ВСЕХ
--- ============================================================
--- Создаём BillboardGui над головой каждого игрока с надписью "ВЗЛОМАНО"
-task.spawn(function()
-    while true do
-        task.wait(5)
+    addButton("🔥 ЕФЕКТИ ВЗЛОМУ", Color3.fromRGB(150, 0, 150), function()
+        createHackEffects()
         for _, p in pairs(Players:GetPlayers()) do
             if p ~= player and p.Character then
                 local head = p.Character:FindFirstChild("Head")
                 if head then
-                    -- Проверяем, есть ли уже тег
                     local tag = head:FindFirstChild("HackedTag")
                     if not tag then
                         local bill = Instance.new("BillboardGui")
@@ -333,13 +309,11 @@ task.spawn(function()
                         bill.StudsOffset = Vector3.new(0, 3, 0)
                         bill.AlwaysOnTop = true
                         bill.Parent = head
-
                         local frame = Instance.new("Frame")
                         frame.Size = UDim2.new(1, 0, 1, 0)
                         frame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
                         frame.BackgroundTransparency = 0.5
                         frame.Parent = bill
-
                         local text = Instance.new("TextLabel")
                         text.Size = UDim2.new(1, 0, 1, 0)
                         text.BackgroundTransparency = 1
@@ -352,9 +326,68 @@ task.spawn(function()
                 end
             end
         end
-    end
-end)
+    end)
 
-print("🎃 RYZEN XENO v9.1 — ХАКЕРСКИЙ РЕЖИМ АКТИВИРОВАН!")
-print("✅ ВСЕ ВИДЯТ, ЧТО ТЫ ХАКЕР!")
-print("✅ НАЖМИ 🎃 ДЛЯ ОТКРЫТИЯ ПАНЕЛИ КОМАНД!")
+    addButton("🎵 МУЗИКА ТРИВОГИ", Color3.fromRGB(0, 150, 200), function()
+        local sound = Instance.new("Sound")
+        sound.SoundId = "rbxassetid://9120385565" -- Звук сирени
+        sound.Volume = 0.5
+        sound.Parent = workspace
+        sound:Play()
+        task.wait(5)
+        sound:Destroy()
+    end)
+
+    addButton("❌ ЗАКРИТИ МЕНЮ", Color3.fromRGB(100, 100, 100), function()
+        menuFrame.Visible = false
+    end)
+
+    scroll.CanvasSize = UDim2.new(0, 0, 0, yPos + 10)
+
+    -- Відкриття/закриття меню по кнопці
+    local menuOpen = false
+    mainBtn.MouseButton1Click:Connect(function()
+        menuOpen = not menuOpen
+        menuFrame.Visible = menuOpen
+    end)
+
+    -- Для мобільних: можна перетягувати кнопку
+    local dragging = false
+    local dragStart = nil
+    mainBtn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+        end
+    end)
+    mainBtn.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.Touch then
+            local delta = input.Position - dragStart
+            mainBtn.Position = mainBtn.Position + UDim2.new(0, delta.X, 0, delta.Y)
+            dragStart = input.Position
+        end
+    end)
+    mainBtn.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+
+    return screenGui
+end
+
+-- Запускаємо меню
+createMobileMenu()
+
+-- ============================================================
+-- 6. АВТОМАТИЧНЕ ПОВІДОМЛЕННЯ ПРИ ЗАПУСКУ
+-- ============================================================
+task.wait(1)
+sendGlobalMessage("🎃 " .. player.Name .. " АКТИВУВАВ ХАКЕРСЬКИЙ РЕЖИМ! ВСІ ПОПЕРЕДЖЕНІ!")
+sendGlobalMessage("🔥 SERVER HACKED BY " .. string.upper(player.Name) .. "! 🔥")
+sendGlobalMessage("⚠️ ВНИМАНИЕ! СЕРВЕР ВЗЛОМАН! ВСЕ ПОД КОНТРОЛЕМ!")
+
+print("🎃 RYZEN XENO v9.1 — ГЛОБАЛЬНИЙ ВЗЛОМ АКТИВОВАНО!")
+print("✅ НАЖМИ 🎃 ДЛЯ ВІДКРИТТЯ МЕНЮ")
+print("✅ ВСІ ГРАВЦІ БАЧАТЬ ТЕГ [ВЗЛОМАНО]")
+print("✅ СПАМ У ЧАТ РОСІЙСЬКОЮ ТА АНГЛІЙСЬКОЮ")
