@@ -160,106 +160,213 @@ UICorner_10.Parent = ScrollingFrame_2
 
 -- Scripts:
 
-local function TQDWBXB_fake_script() -- fly.LocalScript 
+local function LSPFI_fake_script() -- fly.LocalScript 
 	local script = Instance.new('LocalScript', fly)
 
+	-- ============================================================
+	-- 🎃 RYZEN FLY — УНІВЕРСАЛЬНИЙ ПОЛІТ (З ОБХОДОМ)
+	-- ============================================================
+	
 	local Players = game:GetService("Players")
 	local UserInputService = game:GetService("UserInputService")
 	local RunService = game:GetService("RunService")
+	local TweenService = game:GetService("TweenService")
 	
 	local player = Players.LocalPlayer
 	local button = script.Parent
 	
+	-- НАЛАШТУВАННЯ
+	local speed = 50        -- Швидкість польоту
+	local flyMode = 1       -- 1 = BodyVelocity, 2 = CFrame (телепорт), 3 = Tween (плавний)
+	
 	local flying = false
-	local speed = 50 -- Швидкість польоту (можеш змінити)
+	local bodyGyro, bodyVelocity, connection, tweenConnection
+	local flyStep = 0.1     -- для CFrame-методу
 	
-	local bodyGyro, bodyVelocity
-	local connection
-	
-	-- Функція для увімкнення/вимкнення польоту
-	local function toggleFly()
+	-- ============================================================
+	-- ФУНКЦІЯ ОБХОДУ (якщо BodyVelocity заблоковано)
+	-- ============================================================
+	local function getRootPart()
 		local character = player.Character
-		local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		if not character then return nil end
+		return character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
+	end
 	
-		if not rootPart or not humanoid then return end
+	local function getHumanoid()
+		local character = player.Character
+		if not character then return nil end
+		return character:FindFirstChildOfClass("Humanoid")
+	end
+	
+	-- ============================================================
+	-- 1. МЕТОД BodyVelocity (стандартний)
+	-- ============================================================
+	local function startFlyBody()
+		local root = getRootPart()
+		local hum = getHumanoid()
+		if not root or not hum then return end
+	
+		-- Скидаємо попередні сили
+		if bodyGyro then bodyGyro:Destroy() end
+		if bodyVelocity then bodyVelocity:Destroy() end
+		if connection then connection:Disconnect() end
+	
+		hum.PlatformStand = true
+	
+		bodyGyro = Instance.new("BodyGyro")
+		bodyGyro.P = 9e4
+		bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+		bodyGyro.Parent = root
+	
+		bodyVelocity = Instance.new("BodyVelocity")
+		bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+		bodyVelocity.Parent = root
+	
+		local camera = workspace.CurrentCamera
+		connection = RunService.RenderStepped:Connect(function()
+			if not root or not root.Parent then return end
+			local direction = Vector3.new(0, 0, 0)
+			if UserInputService:IsKeyDown(Enum.KeyCode.W) then direction = direction + camera.CFrame.LookVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.S) then direction = direction - camera.CFrame.LookVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.A) then direction = direction - camera.CFrame.RightVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.D) then direction = direction + camera.CFrame.RightVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.Space) then direction = direction + Vector3.new(0, 1, 0) end
+			if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then direction = direction - Vector3.new(0, 1, 0) end
+	
+			bodyGyro.CFrame = camera.CFrame
+			if direction.Magnitude > 0 then
+				bodyVelocity.Velocity = direction.Unit * speed
+			else
+				bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+			end
+		end)
+	end
+	
+	-- ============================================================
+	-- 2. МЕТОД CFrame (телепортація, обходить анти-чити)
+	-- ============================================================
+	local function startFlyCFrame()
+		local root = getRootPart()
+		local hum = getHumanoid()
+		if not root or not hum then return end
+	
+		if connection then connection:Disconnect() end
+	
+		hum.PlatformStand = true
+		local camera = workspace.CurrentCamera
+		local lastTick = tick()
+	
+		connection = RunService.RenderStepped:Connect(function()
+			if not root or not root.Parent then return end
+			local dt = tick() - lastTick
+			lastTick = tick()
+	
+			local direction = Vector3.new(0, 0, 0)
+			if UserInputService:IsKeyDown(Enum.KeyCode.W) then direction = direction + camera.CFrame.LookVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.S) then direction = direction - camera.CFrame.LookVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.A) then direction = direction - camera.CFrame.RightVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.D) then direction = direction + camera.CFrame.RightVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.Space) then direction = direction + Vector3.new(0, 1, 0) end
+			if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then direction = direction - Vector3.new(0, 1, 0) end
+	
+			if direction.Magnitude > 0 then
+				local move = direction.Unit * speed * dt
+				root.CFrame = root.CFrame + move
+			end
+		end)
+	end
+	
+	-- ============================================================
+	-- 3. МЕТОД Tween (плавний, але повільний)
+	-- ============================================================
+	local function startFlyTween()
+		local root = getRootPart()
+		local hum = getHumanoid()
+		if not root or not hum then return end
+	
+		if connection then connection:Disconnect() end
+		if tweenConnection then tweenConnection:Disconnect() end
+	
+		hum.PlatformStand = true
+		local camera = workspace.CurrentCamera
+	
+		tweenConnection = RunService.RenderStepped:Connect(function()
+			if not root or not root.Parent then return end
+			local direction = Vector3.new(0, 0, 0)
+			if UserInputService:IsKeyDown(Enum.KeyCode.W) then direction = direction + camera.CFrame.LookVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.S) then direction = direction - camera.CFrame.LookVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.A) then direction = direction - camera.CFrame.RightVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.D) then direction = direction + camera.CFrame.RightVector end
+			if UserInputService:IsKeyDown(Enum.KeyCode.Space) then direction = direction + Vector3.new(0, 1, 0) end
+			if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then direction = direction - Vector3.new(0, 1, 0) end
+	
+			if direction.Magnitude > 0 then
+				local targetPos = root.Position + direction.Unit * speed * 0.1
+				TweenService:Create(root, TweenInfo.new(0.1, Enum.EasingStyle.Linear), {Position = targetPos}):Play()
+			end
+		end)
+	end
+	
+	-- ============================================================
+	-- ОСНОВНА ФУНКЦІЯ ВКЛЮЧЕННЯ/ВИМКНЕННЯ
+	-- ============================================================
+	local function toggleFly()
+		local root = getRootPart()
+		local hum = getHumanoid()
+		if not root or not hum then return end
 	
 		flying = not flying
 	
 		if flying then
-			-- Міняємо колір або текст кнопки для краси
-			button.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Синій, коли летимо
-			humanoid.PlatformStand = true -- Вимикаємо стандартну анімацію ходьби
-	
-			-- Створюємо сили для тримання персонажа в повітрі
-			bodyGyro = Instance.new("BodyGyro")
-			bodyGyro.P = 9e4
-			bodyGyro.maxTorque = Vector3.new(9e5, 9e5, 9e5)
-			bodyGyro.cframe = rootPart.CFrame
-			bodyGyro.Parent = rootPart
-	
-			bodyVelocity = Instance.new("BodyVelocity")
-			bodyVelocity.velocity = Vector3.new(0, 0, 0)
-			bodyVelocity.maxForce = Vector3.new(9e5, 9e5, 9e5)
-			bodyVelocity.Parent = rootPart
-	
-			-- Постійне оновлення напрямку польоту залежно від камери
-			local camera = workspace.CurrentCamera
-			connection = RunService.RenderStepped:Connect(function()
-				local direction = Vector3.new(0, 0, 0)
-	
-				-- Зчитуємо кнопки клавіатури
-				if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-					direction = direction + camera.CFrame.LookVector
-				end
-				if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-					direction = direction - camera.CFrame.LookVector
-				end
-				if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-					direction = direction - camera.CFrame.RightVector
-				end
-				if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-					direction = direction + camera.CFrame.RightVector
-				end
-				if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-					direction = direction + Vector3.new(0, 1, 0) -- Вгору
-				end
-				if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
-					direction = direction - Vector3.new(0, 1, 0) -- Вниз
-				end
-	
-				-- Повертаємо персонажа туди, куди дивиться камера
-				bodyGyro.cframe = camera.CFrame
-	
-				-- Задаємо швидкість
-				if direction.Magnitude > 0 then
-					bodyVelocity.velocity = direction.Unit * speed
-				else
-					bodyVelocity.velocity = Vector3.new(0, 0, 0)
-				end
-			end)
+			button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+			-- Вибір режиму
+			if flyMode == 1 then
+				startFlyBody()
+			elseif flyMode == 2 then
+				startFlyCFrame()
+			elseif flyMode == 3 then
+				startFlyTween()
+			end
 		else
-			-- Якщо політ вимкнули — прибираємо сили і повертаємо все назад
-			button.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Повертаємо темний колір кнопки
-			humanoid.PlatformStand = false
-	
-			if connection then connection:Disconnect() end
-			if bodyGyro then bodyGyro:Destroy() end
-			if bodyVelocity then bodyVelocity:Destroy() end
+			button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+			hum.PlatformStand = false
+			if bodyGyro then bodyGyro:Destroy(); bodyGyro = nil end
+			if bodyVelocity then bodyVelocity:Destroy(); bodyVelocity = nil end
+			if connection then connection:Disconnect(); connection = nil end
+			if tweenConnection then tweenConnection:Disconnect(); tweenConnection = nil end
 		end
 	end
 	
-	-- Слідкуємо, коли гравець респавниться, щоб скинути політ
+	-- ============================================================
+	-- АВТОМАТИЧНЕ ВИМКНЕННЯ ПРИ РЕСПАВНІ
+	-- ============================================================
 	player.CharacterAdded:Connect(function()
 		flying = false
-		if connection then connection:Disconnect() end
+		if bodyGyro then bodyGyro:Destroy(); bodyGyro = nil end
+		if bodyVelocity then bodyVelocity:Destroy(); bodyVelocity = nil end
+		if connection then connection:Disconnect(); connection = nil end
+		if tweenConnection then tweenConnection:Disconnect(); tweenConnection = nil end
+		local hum = getHumanoid()
+		if hum then hum.PlatformStand = false end
+		button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 	end)
 	
-	-- Зв'язуємо клік по кнопці з функцією польоту
+	-- ============================================================
+	-- ПРИВ'ЯЗКА ДО КНОПКИ
+	-- ============================================================
 	button.MouseButton1Click:Connect(toggleFly)
+	
+	-- ============================================================
+	-- ДОДАТКОВО: ЗМІНА РЕЖИМУ (за потреби)
+	-- ============================================================
+	-- Щоб змінити режим, виклич в консолі:
+	-- flyMode = 2   (або 1, 2, 3)
+	
+	print("🎃 RYZEN FLY ЗАВАНТАЖЕНО! Режим: " .. flyMode .. " (1=Body, 2=CFrame, 3=Tween)")
+	print("💡 Натисни на кнопку для вмикання/вимикання польоту.")
 end
-coroutine.wrap(TQDWBXB_fake_script)()
-local function TOEUXKM_fake_script() -- osnovnoi.DragScript 
+coroutine.wrap(LSPFI_fake_script)()
+local function KFSFX_fake_script() -- osnovnoi.DragScript 
 	local script = Instance.new('LocalScript', osnovnoi)
 
 	local UserInputService = game:GetService("UserInputService")
@@ -376,8 +483,8 @@ local function TOEUXKM_fake_script() -- osnovnoi.DragScript
 		end
 	end)
 end
-coroutine.wrap(TOEUXKM_fake_script)()
-local function EGGW_fake_script() -- script.LocalScript 
+coroutine.wrap(KFSFX_fake_script)()
+local function HRTLDE_fake_script() -- script.LocalScript 
 	local script = Instance.new('LocalScript', script)
 
 	local TweenService = game:GetService("TweenService")
@@ -440,8 +547,8 @@ local function EGGW_fake_script() -- script.LocalScript
 	
 	button.MouseButton1Click:Connect(onButtonClick)
 end
-coroutine.wrap(EGGW_fake_script)()
-local function UOPY_fake_script() -- name.name 
+coroutine.wrap(HRTLDE_fake_script)()
+local function HKWDUBY_fake_script() -- name.name 
 	local script = Instance.new('LocalScript', name)
 
 	local TweenService = game:GetService("TweenService")
@@ -480,8 +587,8 @@ local function UOPY_fake_script() -- name.name
 	local fadeInNickname = TweenService:Create(textLabel, tweenInfo, {TextTransparency = 0})
 	fadeInNickname:Play()
 end
-coroutine.wrap(UOPY_fake_script)()
-local function PAYBUG_fake_script() -- SettingsFrame.setemd 
+coroutine.wrap(HKWDUBY_fake_script)()
+local function CUYXNW_fake_script() -- SettingsFrame.setemd 
 	local script = Instance.new('LocalScript', SettingsFrame)
 
 	local TweenService = game:GetService("TweenService")
@@ -519,4 +626,4 @@ local function PAYBUG_fake_script() -- SettingsFrame.setemd
 		end
 	end)
 end
-coroutine.wrap(PAYBUG_fake_script)()
+coroutine.wrap(CUYXNW_fake_script)()
