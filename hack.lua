@@ -1,192 +1,138 @@
--- Generated using RoadToGlory's Converter v1.1 (RoadToGlory#9879)
+-- Gui to Lua
+-- Version: 3.2
 
 -- Instances:
 
-local Converted = {
-	["_RYZEN ADMIN"] = Instance.new("ScreenGui");
-	["_AdminFrame"] = Instance.new("Frame");
-	["_ScrollingFrame"] = Instance.new("ScrollingFrame");
-	["_UICorner"] = Instance.new("UICorner");
-	["_UICorner1"] = Instance.new("UICorner");
-	["_osnovnoi"] = Instance.new("Frame");
-	["_DragScript"] = Instance.new("LocalScript");
-	["_script"] = Instance.new("TextButton");
-	["_LocalScript"] = Instance.new("LocalScript");
-	["_UICorner2"] = Instance.new("UICorner");
-	["_UICorner3"] = Instance.new("UICorner");
-	["_ImageLabel"] = Instance.new("ImageLabel");
-	["_UICorner4"] = Instance.new("UICorner");
-	["_name"] = Instance.new("TextLabel");
-	["_name1"] = Instance.new("LocalScript");
-	["_UICorner5"] = Instance.new("UICorner");
-	["_SettingsFrame"] = Instance.new("TextButton");
-	["_setemd"] = Instance.new("LocalScript");
-	["_UICorner6"] = Instance.new("UICorner");
-	["_Settings"] = Instance.new("Frame");
-	["_UICorner7"] = Instance.new("UICorner");
-}
+local RYZENADMIN = Instance.new("ScreenGui")
+local AdminFrame = Instance.new("Frame")
+local ScrollingFrame = Instance.new("ScrollingFrame")
+local UICorner = Instance.new("UICorner")
+local UICorner_2 = Instance.new("UICorner")
+local osnovnoi = Instance.new("Frame")
+local script = Instance.new("TextButton")
+local UICorner_3 = Instance.new("UICorner")
+local UICorner_4 = Instance.new("UICorner")
+local ImageLabel = Instance.new("ImageLabel")
+local UICorner_5 = Instance.new("UICorner")
+local name = Instance.new("TextLabel")
+local UICorner_6 = Instance.new("UICorner")
+local SettingsFrame = Instance.new("TextButton")
+local UICorner_7 = Instance.new("UICorner")
+local Settings = Instance.new("Frame")
+local UICorner_8 = Instance.new("UICorner")
 
--- Properties:
+--Properties:
 
-Converted["_RYZEN ADMIN"].ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-Converted["_RYZEN ADMIN"].Name = "RYZEN ADMIN"
-Converted["_RYZEN ADMIN"].Parent = game.Workspace
+RYZENADMIN.Name = "RYZEN ADMIN"
+RYZENADMIN.Parent = game.CoreGui
+RYZENADMIN.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-Converted["_AdminFrame"].BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_AdminFrame"].BorderColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_AdminFrame"].BorderSizePixel = 0
-Converted["_AdminFrame"].Position = UDim2.new(0.354934186, 0, 0.0833333358, 0)
-Converted["_AdminFrame"].Size = UDim2.new(0, 199, 0, 237)
-Converted["_AdminFrame"].Visible = false
-Converted["_AdminFrame"].Name = "AdminFrame"
-Converted["_AdminFrame"].Parent = Converted["_RYZEN ADMIN"]
+AdminFrame.Name = "AdminFrame"
+AdminFrame.Parent = RYZENADMIN
+AdminFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+AdminFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+AdminFrame.BorderSizePixel = 0
+AdminFrame.Position = UDim2.new(0.354934186, 0, 0.0833333358, 0)
+AdminFrame.Size = UDim2.new(0, 199, 0, 237)
+AdminFrame.Visible = false
 
-Converted["_ScrollingFrame"].ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_ScrollingFrame"].Active = true
-Converted["_ScrollingFrame"].BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_ScrollingFrame"].BorderColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_ScrollingFrame"].BorderSizePixel = 0
-Converted["_ScrollingFrame"].Position = UDim2.new(0, 0, 0.00421940908, 0)
-Converted["_ScrollingFrame"].Size = UDim2.new(0, 199, 0, 236)
-Converted["_ScrollingFrame"].Parent = Converted["_AdminFrame"]
+ScrollingFrame.Parent = AdminFrame
+ScrollingFrame.Active = true
+ScrollingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ScrollingFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ScrollingFrame.BorderSizePixel = 0
+ScrollingFrame.Position = UDim2.new(0, 0, 0.00421940908, 0)
+ScrollingFrame.Size = UDim2.new(0, 199, 0, 236)
 
-Converted["_UICorner"].BottomLeftRadius = UDim.new(0, 50)
-Converted["_UICorner"].BottomRightRadius = UDim.new(0, 50)
-Converted["_UICorner"].CornerRadius = UDim.new(0, 50)
-Converted["_UICorner"].TopLeftRadius = UDim.new(0, 50)
-Converted["_UICorner"].TopRightRadius = UDim.new(0, 50)
-Converted["_UICorner"].Parent = Converted["_ScrollingFrame"]
+UICorner.CornerRadius = UDim.new(0, 50)
+UICorner.Parent = ScrollingFrame
 
-Converted["_UICorner1"].BottomLeftRadius = UDim.new(0, 50)
-Converted["_UICorner1"].BottomRightRadius = UDim.new(0, 50)
-Converted["_UICorner1"].CornerRadius = UDim.new(0, 50)
-Converted["_UICorner1"].TopLeftRadius = UDim.new(0, 50)
-Converted["_UICorner1"].TopRightRadius = UDim.new(0, 50)
-Converted["_UICorner1"].Parent = Converted["_AdminFrame"]
+UICorner_2.CornerRadius = UDim.new(0, 50)
+UICorner_2.Parent = AdminFrame
 
-Converted["_osnovnoi"].BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_osnovnoi"].BorderColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_osnovnoi"].BorderSizePixel = 0
-Converted["_osnovnoi"].Position = UDim2.new(0.328654915, 0, 0, 0)
-Converted["_osnovnoi"].Size = UDim2.new(0, 399, 0, 44)
-Converted["_osnovnoi"].Name = "osnovnoi"
-Converted["_osnovnoi"].Parent = Converted["_RYZEN ADMIN"]
+osnovnoi.Name = "osnovnoi"
+osnovnoi.Parent = RYZENADMIN
+osnovnoi.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+osnovnoi.BorderColor3 = Color3.fromRGB(0, 0, 0)
+osnovnoi.BorderSizePixel = 0
+osnovnoi.Position = UDim2.new(0.328654915, 0, 0, 0)
+osnovnoi.Size = UDim2.new(0, 399, 0, 44)
 
-Converted["_script"].Font = Enum.Font.SourceSans
-Converted["_script"].Text = "Скрипт"
-Converted["_script"].TextColor3 = Color3.fromRGB(255, 255, 255)
-Converted["_script"].TextSize = 14
-Converted["_script"].TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
-Converted["_script"].BackgroundColor3 = Color3.fromRGB(106.00000888109207, 106.00000888109207, 106.00000888109207)
-Converted["_script"].BorderColor3 = Color3.fromRGB(255, 255, 255)
-Converted["_script"].BorderSizePixel = 0
-Converted["_script"].Position = UDim2.new(0.324128509, 0, 0.13636364, 0)
-Converted["_script"].Size = UDim2.new(0, 34, 0, 32)
-Converted["_script"].Name = "script"
-Converted["_script"].Parent = Converted["_osnovnoi"]
+script.Name = "script"
+script.Parent = osnovnoi
+script.BackgroundColor3 = Color3.fromRGB(106, 106, 106)
+script.BorderColor3 = Color3.fromRGB(255, 255, 255)
+script.BorderSizePixel = 0
+script.Position = UDim2.new(0.324128509, 0, 0.13636364, 0)
+script.Size = UDim2.new(0, 34, 0, 32)
+script.Font = Enum.Font.SourceSans
+script.Text = "Скрипт"
+script.TextColor3 = Color3.fromRGB(255, 255, 255)
+script.TextSize = 14.000
+script.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
 
-Converted["_UICorner2"].BottomLeftRadius = UDim.new(0, 40)
-Converted["_UICorner2"].BottomRightRadius = UDim.new(0, 40)
-Converted["_UICorner2"].CornerRadius = UDim.new(0, 40)
-Converted["_UICorner2"].TopLeftRadius = UDim.new(0, 40)
-Converted["_UICorner2"].TopRightRadius = UDim.new(0, 40)
-Converted["_UICorner2"].Parent = Converted["_script"]
+UICorner_3.CornerRadius = UDim.new(0, 40)
+UICorner_3.Parent = script
 
-Converted["_UICorner3"].BottomLeftRadius = UDim.new(1, 0)
-Converted["_UICorner3"].BottomRightRadius = UDim.new(1, 0)
-Converted["_UICorner3"].CornerRadius = UDim.new(1, 0)
-Converted["_UICorner3"].TopLeftRadius = UDim.new(1, 0)
-Converted["_UICorner3"].TopRightRadius = UDim.new(1, 0)
-Converted["_UICorner3"].Parent = Converted["_osnovnoi"]
+UICorner_4.CornerRadius = UDim.new(1, 0)
+UICorner_4.Parent = osnovnoi
 
-Converted["_ImageLabel"].Image = "rbxassetid://74347438788688"
-Converted["_ImageLabel"].ImageContent = Content{SourceType=Uri, Uri=rbxassetid://74347438788688}
-Converted["_ImageLabel"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Converted["_ImageLabel"].BorderColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_ImageLabel"].BorderSizePixel = 0
-Converted["_ImageLabel"].Size = UDim2.new(0, 45, 0, 44)
-Converted["_ImageLabel"].Parent = Converted["_osnovnoi"]
+ImageLabel.Parent = osnovnoi
+ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ImageLabel.BorderSizePixel = 0
+ImageLabel.Size = UDim2.new(0, 45, 0, 44)
+ImageLabel.Image = "rbxassetid://74347438788688"
 
-Converted["_UICorner4"].BottomLeftRadius = UDim.new(1, 0)
-Converted["_UICorner4"].BottomRightRadius = UDim.new(1, 0)
-Converted["_UICorner4"].CornerRadius = UDim.new(1, 0)
-Converted["_UICorner4"].TopLeftRadius = UDim.new(1, 0)
-Converted["_UICorner4"].TopRightRadius = UDim.new(1, 0)
-Converted["_UICorner4"].Parent = Converted["_ImageLabel"]
+UICorner_5.CornerRadius = UDim.new(1, 0)
+UICorner_5.Parent = ImageLabel
 
-Converted["_name"].Font = Enum.Font.SourceSans
-Converted["_name"].Text = "Welcome"
-Converted["_name"].TextColor3 = Color3.fromRGB(255, 255, 255)
-Converted["_name"].TextSize = 14
-Converted["_name"].BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_name"].BorderColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_name"].BorderSizePixel = 0
-Converted["_name"].Position = UDim2.new(0.138465524, 0, 0.13636364, 0)
-Converted["_name"].Size = UDim2.new(0, 52, 0, 18)
-Converted["_name"].Name = "name"
-Converted["_name"].Parent = Converted["_osnovnoi"]
+name.Name = "name"
+name.Parent = osnovnoi
+name.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+name.BorderColor3 = Color3.fromRGB(0, 0, 0)
+name.BorderSizePixel = 0
+name.Position = UDim2.new(0.138465524, 0, 0.13636364, 0)
+name.Size = UDim2.new(0, 52, 0, 18)
+name.Font = Enum.Font.SourceSans
+name.Text = "Welcome"
+name.TextColor3 = Color3.fromRGB(255, 255, 255)
+name.TextSize = 14.000
 
-Converted["_UICorner5"].BottomLeftRadius = UDim.new(0, 50)
-Converted["_UICorner5"].BottomRightRadius = UDim.new(0, 50)
-Converted["_UICorner5"].CornerRadius = UDim.new(0, 50)
-Converted["_UICorner5"].TopLeftRadius = UDim.new(0, 50)
-Converted["_UICorner5"].TopRightRadius = UDim.new(0, 50)
-Converted["_UICorner5"].Parent = Converted["_name"]
+UICorner_6.CornerRadius = UDim.new(0, 50)
+UICorner_6.Parent = name
 
-Converted["_SettingsFrame"].Font = Enum.Font.SourceSans
-Converted["_SettingsFrame"].Text = "⚙️"
-Converted["_SettingsFrame"].TextColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_SettingsFrame"].TextSize = 14
-Converted["_SettingsFrame"].BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_SettingsFrame"].BorderColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_SettingsFrame"].BorderSizePixel = 0
-Converted["_SettingsFrame"].Position = UDim2.new(0.864661634, 0, 0.0909090936, 0)
-Converted["_SettingsFrame"].Size = UDim2.new(0, 43, 0, 36)
-Converted["_SettingsFrame"].Name = "SettingsFrame"
-Converted["_SettingsFrame"].Parent = Converted["_osnovnoi"]
+SettingsFrame.Name = "SettingsFrame"
+SettingsFrame.Parent = osnovnoi
+SettingsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SettingsFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SettingsFrame.BorderSizePixel = 0
+SettingsFrame.Position = UDim2.new(0.864661634, 0, 0.0909090936, 0)
+SettingsFrame.Size = UDim2.new(0, 43, 0, 36)
+SettingsFrame.Font = Enum.Font.SourceSans
+SettingsFrame.Text = "⚙️"
+SettingsFrame.TextColor3 = Color3.fromRGB(0, 0, 0)
+SettingsFrame.TextSize = 14.000
 
-Converted["_UICorner6"].BottomLeftRadius = UDim.new(0, 40)
-Converted["_UICorner6"].BottomRightRadius = UDim.new(0, 40)
-Converted["_UICorner6"].CornerRadius = UDim.new(0, 40)
-Converted["_UICorner6"].TopLeftRadius = UDim.new(0, 40)
-Converted["_UICorner6"].TopRightRadius = UDim.new(0, 40)
-Converted["_UICorner6"].Parent = Converted["_SettingsFrame"]
+UICorner_7.CornerRadius = UDim.new(0, 40)
+UICorner_7.Parent = SettingsFrame
 
-Converted["_Settings"].BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_Settings"].BorderColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_Settings"].BorderSizePixel = 0
-Converted["_Settings"].Position = UDim2.new(0.547815084, 0, 0.0745614022, 0)
-Converted["_Settings"].Size = UDim2.new(0, 179, 0, 172)
-Converted["_Settings"].Visible = false
-Converted["_Settings"].Name = "Settings"
-Converted["_Settings"].Parent = Converted["_RYZEN ADMIN"]
+Settings.Name = "Settings"
+Settings.Parent = RYZENADMIN
+Settings.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Settings.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Settings.BorderSizePixel = 0
+Settings.Position = UDim2.new(0.547815084, 0, 0.0745614022, 0)
+Settings.Size = UDim2.new(0, 179, 0, 172)
+Settings.Visible = false
 
-Converted["_UICorner7"].BottomLeftRadius = UDim.new(0, 40)
-Converted["_UICorner7"].BottomRightRadius = UDim.new(0, 40)
-Converted["_UICorner7"].CornerRadius = UDim.new(0, 40)
-Converted["_UICorner7"].TopLeftRadius = UDim.new(0, 40)
-Converted["_UICorner7"].TopRightRadius = UDim.new(0, 40)
-Converted["_UICorner7"].Parent = Converted["_Settings"]
+UICorner_8.CornerRadius = UDim.new(0, 40)
+UICorner_8.Parent = Settings
 
--- Fake Module Scripts:
+-- Scripts:
 
-local fake_module_scripts = {}
-
-
--- Fake Local Scripts:
-
-local function TKKK_fake_script() -- Fake Script: Workspace.RYZEN ADMIN.osnovnoi.DragScript
-    local script = Instance.new("LocalScript")
-    script.Name = "DragScript"
-    script.Parent = Converted["_osnovnoi"]
-    local req = require
-    local require = function(obj)
-        local fake = fake_module_scripts[obj]
-        if fake then
-            return fake()
-        end
-        return req(obj)
-    end
+local function WRPEL_fake_script() -- osnovnoi.DragScript 
+	local script = Instance.new('LocalScript', osnovnoi)
 
 	local UserInputService = game:GetService("UserInputService")
 	local TweenService = game:GetService("TweenService")
@@ -302,18 +248,9 @@ local function TKKK_fake_script() -- Fake Script: Workspace.RYZEN ADMIN.osnovnoi
 		end
 	end)
 end
-local function AQBFTOX_fake_script() -- Fake Script: Workspace.RYZEN ADMIN.osnovnoi.script.LocalScript
-    local script = Instance.new("LocalScript")
-    script.Name = "LocalScript"
-    script.Parent = Converted["_script"]
-    local req = require
-    local require = function(obj)
-        local fake = fake_module_scripts[obj]
-        if fake then
-            return fake()
-        end
-        return req(obj)
-    end
+coroutine.wrap(WRPEL_fake_script)()
+local function IJHGQ_fake_script() -- script.LocalScript 
+	local script = Instance.new('LocalScript', script)
 
 	local TweenService = game:GetService("TweenService")
 	
@@ -375,18 +312,9 @@ local function AQBFTOX_fake_script() -- Fake Script: Workspace.RYZEN ADMIN.osnov
 	
 	button.MouseButton1Click:Connect(onButtonClick)
 end
-local function BNEY_fake_script() -- Fake Script: Workspace.RYZEN ADMIN.osnovnoi.name.name
-    local script = Instance.new("LocalScript")
-    script.Name = "name"
-    script.Parent = Converted["_name"]
-    local req = require
-    local require = function(obj)
-        local fake = fake_module_scripts[obj]
-        if fake then
-            return fake()
-        end
-        return req(obj)
-    end
+coroutine.wrap(IJHGQ_fake_script)()
+local function DCULVD_fake_script() -- name.name 
+	local script = Instance.new('LocalScript', name)
 
 	local TweenService = game:GetService("TweenService")
 	local player = game.Players.LocalPlayer
@@ -424,18 +352,9 @@ local function BNEY_fake_script() -- Fake Script: Workspace.RYZEN ADMIN.osnovnoi
 	local fadeInNickname = TweenService:Create(textLabel, tweenInfo, {TextTransparency = 0})
 	fadeInNickname:Play()
 end
-local function KIRZTWM_fake_script() -- Fake Script: Workspace.RYZEN ADMIN.osnovnoi.SettingsFrame.setemd
-    local script = Instance.new("LocalScript")
-    script.Name = "setemd"
-    script.Parent = Converted["_SettingsFrame"]
-    local req = require
-    local require = function(obj)
-        local fake = fake_module_scripts[obj]
-        if fake then
-            return fake()
-        end
-        return req(obj)
-    end
+coroutine.wrap(DCULVD_fake_script)()
+local function TVJBRL_fake_script() -- SettingsFrame.setemd 
+	local script = Instance.new('LocalScript', SettingsFrame)
 
 	local TweenService = game:GetService("TweenService")
 	local toggleButton = script.Parent -- Твоя кнопка SettingsFrame
@@ -472,8 +391,4 @@ local function KIRZTWM_fake_script() -- Fake Script: Workspace.RYZEN ADMIN.osnov
 		end
 	end)
 end
-
-coroutine.wrap(TKKK_fake_script)()
-coroutine.wrap(AQBFTOX_fake_script)()
-coroutine.wrap(BNEY_fake_script)()
-coroutine.wrap(KIRZTWM_fake_script)()
+coroutine.wrap(TVJBRL_fake_script)()
