@@ -7,19 +7,23 @@ local RYZENADMIN = Instance.new("ScreenGui")
 local AdminFrame = Instance.new("Frame")
 local ScrollingFrame = Instance.new("ScrollingFrame")
 local UICorner = Instance.new("UICorner")
+local fly = Instance.new("TextButton")
 local UICorner_2 = Instance.new("UICorner")
+local UICorner_3 = Instance.new("UICorner")
 local osnovnoi = Instance.new("Frame")
 local script = Instance.new("TextButton")
-local UICorner_3 = Instance.new("UICorner")
 local UICorner_4 = Instance.new("UICorner")
-local ImageLabel = Instance.new("ImageLabel")
 local UICorner_5 = Instance.new("UICorner")
-local name = Instance.new("TextLabel")
+local ImageLabel = Instance.new("ImageLabel")
 local UICorner_6 = Instance.new("UICorner")
-local SettingsFrame = Instance.new("TextButton")
+local name = Instance.new("TextLabel")
 local UICorner_7 = Instance.new("UICorner")
-local Settings = Instance.new("Frame")
+local SettingsFrame = Instance.new("TextButton")
 local UICorner_8 = Instance.new("UICorner")
+local Settings = Instance.new("Frame")
+local UICorner_9 = Instance.new("UICorner")
+local ScrollingFrame_2 = Instance.new("ScrollingFrame")
+local UICorner_10 = Instance.new("UICorner")
 
 --Properties:
 
@@ -39,16 +43,31 @@ AdminFrame.Visible = false
 ScrollingFrame.Parent = AdminFrame
 ScrollingFrame.Active = true
 ScrollingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ScrollingFrame.BackgroundTransparency = 0.200
 ScrollingFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ScrollingFrame.BorderSizePixel = 0
-ScrollingFrame.Position = UDim2.new(0, 0, 0.00421940908, 0)
 ScrollingFrame.Size = UDim2.new(0, 199, 0, 236)
 
 UICorner.CornerRadius = UDim.new(0, 50)
 UICorner.Parent = ScrollingFrame
 
+fly.Name = "fly"
+fly.Parent = ScrollingFrame
+fly.BackgroundColor3 = Color3.fromRGB(54, 54, 54)
+fly.BorderColor3 = Color3.fromRGB(0, 0, 0)
+fly.BorderSizePixel = 0
+fly.Position = UDim2.new(0.110552765, 0, 0.0542265512, 0)
+fly.Size = UDim2.new(0, 45, 0, 22)
+fly.Font = Enum.Font.SourceSans
+fly.Text = "fly"
+fly.TextColor3 = Color3.fromRGB(255, 255, 255)
+fly.TextSize = 14.000
+
 UICorner_2.CornerRadius = UDim.new(0, 50)
-UICorner_2.Parent = AdminFrame
+UICorner_2.Parent = fly
+
+UICorner_3.CornerRadius = UDim.new(0, 50)
+UICorner_3.Parent = AdminFrame
 
 osnovnoi.Name = "osnovnoi"
 osnovnoi.Parent = RYZENADMIN
@@ -71,11 +90,11 @@ script.TextColor3 = Color3.fromRGB(255, 255, 255)
 script.TextSize = 14.000
 script.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
 
-UICorner_3.CornerRadius = UDim.new(0, 40)
-UICorner_3.Parent = script
+UICorner_4.CornerRadius = UDim.new(0, 40)
+UICorner_4.Parent = script
 
-UICorner_4.CornerRadius = UDim.new(1, 0)
-UICorner_4.Parent = osnovnoi
+UICorner_5.CornerRadius = UDim.new(1, 0)
+UICorner_5.Parent = osnovnoi
 
 ImageLabel.Parent = osnovnoi
 ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -84,8 +103,8 @@ ImageLabel.BorderSizePixel = 0
 ImageLabel.Size = UDim2.new(0, 45, 0, 44)
 ImageLabel.Image = "rbxassetid://74347438788688"
 
-UICorner_5.CornerRadius = UDim.new(1, 0)
-UICorner_5.Parent = ImageLabel
+UICorner_6.CornerRadius = UDim.new(1, 0)
+UICorner_6.Parent = ImageLabel
 
 name.Name = "name"
 name.Parent = osnovnoi
@@ -99,39 +118,148 @@ name.Text = "Welcome"
 name.TextColor3 = Color3.fromRGB(255, 255, 255)
 name.TextSize = 14.000
 
-UICorner_6.CornerRadius = UDim.new(0, 50)
-UICorner_6.Parent = name
+UICorner_7.CornerRadius = UDim.new(0, 50)
+UICorner_7.Parent = name
 
 SettingsFrame.Name = "SettingsFrame"
 SettingsFrame.Parent = osnovnoi
 SettingsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 SettingsFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 SettingsFrame.BorderSizePixel = 0
-SettingsFrame.Position = UDim2.new(0.864661634, 0, 0.0909090936, 0)
+SettingsFrame.Position = UDim2.new(0.89223057, 0, 0.0909090936, 0)
 SettingsFrame.Size = UDim2.new(0, 43, 0, 36)
 SettingsFrame.Font = Enum.Font.SourceSans
 SettingsFrame.Text = "⚙️"
 SettingsFrame.TextColor3 = Color3.fromRGB(0, 0, 0)
 SettingsFrame.TextSize = 14.000
 
-UICorner_7.CornerRadius = UDim.new(0, 40)
-UICorner_7.Parent = SettingsFrame
+UICorner_8.CornerRadius = UDim.new(0, 40)
+UICorner_8.Parent = SettingsFrame
 
 Settings.Name = "Settings"
 Settings.Parent = RYZENADMIN
 Settings.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 Settings.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Settings.BorderSizePixel = 0
-Settings.Position = UDim2.new(0.547815084, 0, 0.0745614022, 0)
+Settings.Position = UDim2.new(0.556523204, 0, 0.0818713456, 0)
 Settings.Size = UDim2.new(0, 179, 0, 172)
 Settings.Visible = false
 
-UICorner_8.CornerRadius = UDim.new(0, 40)
-UICorner_8.Parent = Settings
+UICorner_9.CornerRadius = UDim.new(0, 40)
+UICorner_9.Parent = Settings
+
+ScrollingFrame_2.Parent = Settings
+ScrollingFrame_2.Active = true
+ScrollingFrame_2.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ScrollingFrame_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ScrollingFrame_2.BorderSizePixel = 0
+ScrollingFrame_2.Size = UDim2.new(0, 179, 0, 172)
+
+UICorner_10.CornerRadius = UDim.new(0, 40)
+UICorner_10.Parent = ScrollingFrame_2
 
 -- Scripts:
 
-local function WRPEL_fake_script() -- osnovnoi.DragScript 
+local function TQDWBXB_fake_script() -- fly.LocalScript 
+	local script = Instance.new('LocalScript', fly)
+
+	local Players = game:GetService("Players")
+	local UserInputService = game:GetService("UserInputService")
+	local RunService = game:GetService("RunService")
+	
+	local player = Players.LocalPlayer
+	local button = script.Parent
+	
+	local flying = false
+	local speed = 50 -- Швидкість польоту (можеш змінити)
+	
+	local bodyGyro, bodyVelocity
+	local connection
+	
+	-- Функція для увімкнення/вимкнення польоту
+	local function toggleFly()
+		local character = player.Character
+		local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	
+		if not rootPart or not humanoid then return end
+	
+		flying = not flying
+	
+		if flying then
+			-- Міняємо колір або текст кнопки для краси
+			button.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Синій, коли летимо
+			humanoid.PlatformStand = true -- Вимикаємо стандартну анімацію ходьби
+	
+			-- Створюємо сили для тримання персонажа в повітрі
+			bodyGyro = Instance.new("BodyGyro")
+			bodyGyro.P = 9e4
+			bodyGyro.maxTorque = Vector3.new(9e5, 9e5, 9e5)
+			bodyGyro.cframe = rootPart.CFrame
+			bodyGyro.Parent = rootPart
+	
+			bodyVelocity = Instance.new("BodyVelocity")
+			bodyVelocity.velocity = Vector3.new(0, 0, 0)
+			bodyVelocity.maxForce = Vector3.new(9e5, 9e5, 9e5)
+			bodyVelocity.Parent = rootPart
+	
+			-- Постійне оновлення напрямку польоту залежно від камери
+			local camera = workspace.CurrentCamera
+			connection = RunService.RenderStepped:Connect(function()
+				local direction = Vector3.new(0, 0, 0)
+	
+				-- Зчитуємо кнопки клавіатури
+				if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+					direction = direction + camera.CFrame.LookVector
+				end
+				if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+					direction = direction - camera.CFrame.LookVector
+				end
+				if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+					direction = direction - camera.CFrame.RightVector
+				end
+				if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+					direction = direction + camera.CFrame.RightVector
+				end
+				if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+					direction = direction + Vector3.new(0, 1, 0) -- Вгору
+				end
+				if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+					direction = direction - Vector3.new(0, 1, 0) -- Вниз
+				end
+	
+				-- Повертаємо персонажа туди, куди дивиться камера
+				bodyGyro.cframe = camera.CFrame
+	
+				-- Задаємо швидкість
+				if direction.Magnitude > 0 then
+					bodyVelocity.velocity = direction.Unit * speed
+				else
+					bodyVelocity.velocity = Vector3.new(0, 0, 0)
+				end
+			end)
+		else
+			-- Якщо політ вимкнули — прибираємо сили і повертаємо все назад
+			button.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Повертаємо темний колір кнопки
+			humanoid.PlatformStand = false
+	
+			if connection then connection:Disconnect() end
+			if bodyGyro then bodyGyro:Destroy() end
+			if bodyVelocity then bodyVelocity:Destroy() end
+		end
+	end
+	
+	-- Слідкуємо, коли гравець респавниться, щоб скинути політ
+	player.CharacterAdded:Connect(function()
+		flying = false
+		if connection then connection:Disconnect() end
+	end)
+	
+	-- Зв'язуємо клік по кнопці з функцією польоту
+	button.MouseButton1Click:Connect(toggleFly)
+end
+coroutine.wrap(TQDWBXB_fake_script)()
+local function TOEUXKM_fake_script() -- osnovnoi.DragScript 
 	local script = Instance.new('LocalScript', osnovnoi)
 
 	local UserInputService = game:GetService("UserInputService")
@@ -248,8 +376,8 @@ local function WRPEL_fake_script() -- osnovnoi.DragScript
 		end
 	end)
 end
-coroutine.wrap(WRPEL_fake_script)()
-local function IJHGQ_fake_script() -- script.LocalScript 
+coroutine.wrap(TOEUXKM_fake_script)()
+local function EGGW_fake_script() -- script.LocalScript 
 	local script = Instance.new('LocalScript', script)
 
 	local TweenService = game:GetService("TweenService")
@@ -312,8 +440,8 @@ local function IJHGQ_fake_script() -- script.LocalScript
 	
 	button.MouseButton1Click:Connect(onButtonClick)
 end
-coroutine.wrap(IJHGQ_fake_script)()
-local function DCULVD_fake_script() -- name.name 
+coroutine.wrap(EGGW_fake_script)()
+local function UOPY_fake_script() -- name.name 
 	local script = Instance.new('LocalScript', name)
 
 	local TweenService = game:GetService("TweenService")
@@ -352,8 +480,8 @@ local function DCULVD_fake_script() -- name.name
 	local fadeInNickname = TweenService:Create(textLabel, tweenInfo, {TextTransparency = 0})
 	fadeInNickname:Play()
 end
-coroutine.wrap(DCULVD_fake_script)()
-local function TVJBRL_fake_script() -- SettingsFrame.setemd 
+coroutine.wrap(UOPY_fake_script)()
+local function PAYBUG_fake_script() -- SettingsFrame.setemd 
 	local script = Instance.new('LocalScript', SettingsFrame)
 
 	local TweenService = game:GetService("TweenService")
@@ -391,4 +519,4 @@ local function TVJBRL_fake_script() -- SettingsFrame.setemd
 		end
 	end)
 end
-coroutine.wrap(TVJBRL_fake_script)()
+coroutine.wrap(PAYBUG_fake_script)()
