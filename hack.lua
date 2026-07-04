@@ -1,3 +1,8 @@
+-- Gui to Lua
+-- Version: 3.2
+
+-- Instances:
+
 local RYZENADMIN = Instance.new("ScreenGui")
 local AdminFrame = Instance.new("Frame")
 local ScrollingFrame = Instance.new("ScrollingFrame")
@@ -60,8 +65,8 @@ AdminFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 AdminFrame.BackgroundTransparency = 0.800
 AdminFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 AdminFrame.BorderSizePixel = 0
-AdminFrame.Position = UDim2.new(0.354934186, 0, 0.0833333358, 0)
-AdminFrame.Size = UDim2.new(0, 199, 0, 237)
+AdminFrame.Position = UDim2.new(0.354934216, 0, 0.0833333358, 0)
+AdminFrame.Size = UDim2.new(0, 293, 0, 290)
 AdminFrame.Visible = false
 
 ScrollingFrame.Parent = AdminFrame
@@ -70,7 +75,7 @@ ScrollingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 ScrollingFrame.BackgroundTransparency = 0.700
 ScrollingFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ScrollingFrame.BorderSizePixel = 0
-ScrollingFrame.Size = UDim2.new(0, 199, 0, 236)
+ScrollingFrame.Size = UDim2.new(0, 293, 0, 290)
 
 UICorner.CornerRadius = UDim.new(0, 50)
 UICorner.Parent = ScrollingFrame
@@ -97,7 +102,7 @@ invis.BackgroundColor3 = Color3.fromRGB(54, 54, 54)
 invis.BackgroundTransparency = 0.500
 invis.BorderColor3 = Color3.fromRGB(0, 0, 0)
 invis.BorderSizePixel = 0
-invis.Position = UDim2.new(0.256281406, 0, 0.0268003885, 0)
+invis.Position = UDim2.new(0.20167391, 0, 0.0268003922, 0)
 invis.Size = UDim2.new(0, 34, 0, 31)
 invis.Font = Enum.Font.SourceSans
 invis.Text = "invis"
@@ -113,7 +118,7 @@ noclip.BackgroundColor3 = Color3.fromRGB(54, 54, 54)
 noclip.BackgroundTransparency = 0.500
 noclip.BorderColor3 = Color3.fromRGB(0, 0, 0)
 noclip.BorderSizePixel = 0
-noclip.Position = UDim2.new(0.487437189, 0, 0.0246907808, 0)
+noclip.Position = UDim2.new(0.367983252, 0, 0.0264149234, 0)
 noclip.Size = UDim2.new(0, 34, 0, 31)
 noclip.Font = Enum.Font.Unknown
 noclip.Text = "noclip"
@@ -129,12 +134,12 @@ ESP.BackgroundColor3 = Color3.fromRGB(54, 54, 54)
 ESP.BackgroundTransparency = 0.500
 ESP.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ESP.BorderSizePixel = 0
-ESP.Position = UDim2.new(0.256281406, 0, 0.104859561, 0)
+ESP.Position = UDim2.new(0.225564688, 0, 0.104859553, 0)
 ESP.Size = UDim2.new(0, 34, 0, 31)
 ESP.Font = Enum.Font.Unknown
 ESP.Text = "ESP"
 ESP.TextColor3 = Color3.fromRGB(255, 255, 255)
-ESP.TextSize = 14.000
+ESP.TextSize = 19.000
 
 UICorner_5.CornerRadius = UDim.new(0, 50)
 UICorner_5.Parent = ESP
@@ -150,7 +155,7 @@ speed.Size = UDim2.new(0, 34, 0, 31)
 speed.Font = Enum.Font.Unknown
 speed.Text = "speed"
 speed.TextColor3 = Color3.fromRGB(255, 255, 255)
-speed.TextSize = 14.000
+speed.TextSize = 18.000
 
 UICorner_6.CornerRadius = UDim.new(0, 50)
 UICorner_6.Parent = speed
@@ -161,12 +166,12 @@ SpinBot.BackgroundColor3 = Color3.fromRGB(54, 54, 54)
 SpinBot.BackgroundTransparency = 0.500
 SpinBot.BorderColor3 = Color3.fromRGB(0, 0, 0)
 SpinBot.BorderSizePixel = 0
-SpinBot.Position = UDim2.new(0.457286417, 0, 0.104859561, 0)
+SpinBot.Position = UDim2.new(0.408938885, 0, 0.104859553, 0)
 SpinBot.Size = UDim2.new(0, 45, 0, 31)
 SpinBot.Font = Enum.Font.Unknown
 SpinBot.Text = "SpinBot"
 SpinBot.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpinBot.TextSize = 14.000
+SpinBot.TextSize = 16.000
 
 UICorner_7.CornerRadius = UDim.new(0, 50)
 UICorner_7.Parent = SpinBot
@@ -177,12 +182,13 @@ HatAura.BackgroundColor3 = Color3.fromRGB(54, 54, 54)
 HatAura.BackgroundTransparency = 0.500
 HatAura.BorderColor3 = Color3.fromRGB(0, 0, 0)
 HatAura.BorderSizePixel = 0
-HatAura.Position = UDim2.new(0.683417082, 0, 0.0246907808, 0)
+HatAura.Position = UDim2.new(0.543485343, 0, 0.0246907864, 0)
 HatAura.Size = UDim2.new(0, 45, 0, 31)
 HatAura.Font = Enum.Font.Unknown
 HatAura.Text = "Hat Aura"
 HatAura.TextColor3 = Color3.fromRGB(255, 255, 255)
 HatAura.TextSize = 14.000
+HatAura.TextWrapped = true
 
 UICorner_8.CornerRadius = UDim.new(0, 50)
 UICorner_8.Parent = HatAura
@@ -405,7 +411,7 @@ UICorner_23.Parent = OrbitWheelFly
 
 -- Scripts:
 
-local function TPAQFO_fake_script() -- fly.LocalScript 
+local function DORXU_fake_script() -- fly.LocalScript 
 	local script = Instance.new('LocalScript', fly)
 
 	local Players = game:GetService("Players")
@@ -496,72 +502,45 @@ local function TPAQFO_fake_script() -- fly.LocalScript
 	
 	button.MouseButton1Click:Connect(toggleFly)
 end
-coroutine.wrap(TPAQFO_fake_script)()
-local function BUOER_fake_script() -- invis.LocalScript 
+coroutine.wrap(DORXU_fake_script)()
+local function KIVLFC_fake_script() -- invis.LocalScript 
 	local script = Instance.new('LocalScript', invis)
 
 	local Players = game:GetService("Players")
-	local RunService = game:GetService("RunService")
 	local Workspace = game:GetService("Workspace")
 	
-	local button = script.Parent
 	local player = Players.LocalPlayer
-	
+	local button = script.Parent
 	local invisActive = false
-	local fakeSeat = nil
-	local originalCFrame = nil
+	local camera = Workspace.CurrentCamera
 	
-	local function startInvis()
+	local function setInvis(active)
 		local character = player.Character
-		local hrp = character and character:FindFirstChild("HumanoidRootPart")
-		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		if not character then return end
 	
-		if not character or not hrp or not humanoid then return end
-	
-		-- Запам'ятовуємо позицію перед увімкненням
-		originalCFrame = hrp.CFrame
-	
-		-- 🛠 Створюємо фейкове сидіння під картою
-		fakeSeat = Instance.new("Seat")
-		fakeSeat.Size = Vector3.new(1, 1, 1)
-		fakeSeat.Position = hrp.Position - Vector3.new(0, 100, 0) -- Ховаємо координати вниз
-		fakeSeat.Transparency = 1
-		fakeSeat.CanCollide = false
-		fakeSeat.Parent = Workspace
-	
-		-- Змушуємо гуманоїда сісти (це ламає рендер твого тіла для інших)
-		fakeSeat:Sit(humanoid)
-	
-		-- Робимо фокус: повертаємо тобі повну свободу пересування клієнтом
-		task.wait(0.1)
-		hrp.CFrame = originalCFrame
-		humanoid.PlatformStand = false
-	
-		-- Робимо тебе напівпрозорим для себе, щоб ти бачив куди біжиш
-		for _, part in pairs(character:GetDescendants()) do
-			if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-				part.Transparency = 0.5
-			elseif part:IsA("Decal") then
-				part.Transparency = 0.5
-			end
-		end
-	end
-	
-	local function stopInvis()
-		local character = player.Character
-		local hrp = character and character:FindFirstChild("HumanoidRootPart")
-	
-		-- Видаляємо крісло — це моментально повертає тебе з інвізу
-		if fakeSeat then
-			fakeSeat:Destroy()
-			fakeSeat = nil
-		end
-	
-		-- Повертаємо нормальну видимість тіла
-		if character then
+		if active then
+			-- Ховаємо персонажа в Camera (сервер перестає відображати його іншим)
 			for _, part in pairs(character:GetDescendants()) do
-				if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-					part.Transparency = 0
+				if part:IsA("BasePart") then
+					part.LocalTransparencyModifier = 1 -- Змушуємо клієнт думати, що ти невидимий
+					if part.Name ~= "HumanoidRootPart" then
+						part.Transparency = 1
+					end
+				elseif part:IsA("Decal") then
+					part.Transparency = 1
+				end
+			end
+			-- Змінюємо батька (Parent) — це розриває зв'язок з рендером для інших гравців
+			character.Parent = camera 
+		else
+			-- Повертаємо все назад
+			character.Parent = Workspace
+			for _, part in pairs(character:GetDescendants()) do
+				if part:IsA("BasePart") then
+					part.LocalTransparencyModifier = 0
+					if part.Name ~= "HumanoidRootPart" then
+						part.Transparency = 0
+					end
 				elseif part:IsA("Decal") then
 					part.Transparency = 0
 				end
@@ -569,28 +548,14 @@ local function BUOER_fake_script() -- invis.LocalScript
 		end
 	end
 	
-	-- 📱 Оптимізовано під телефони та ПК (Activated)
 	button.Activated:Connect(function()
 		invisActive = not invisActive
-	
-		if invisActive then
-			button.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Синя кнопка (працює)
-			startInvis()
-		else
-			button.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Темна кнопка (вимкнено)
-			stopInvis()
-		end
-	end)
-	
-	-- Безпечне скидання при реальній смерті від ворогів
-	player.CharacterAdded:Connect(function()
-		invisActive = false
-		button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-		if fakeSeat then fakeSeat:Destroy() fakeSeat = nil end
+		button.BackgroundColor3 = invisActive and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(30, 30, 30)
+		setInvis(invisActive)
 	end)
 end
-coroutine.wrap(BUOER_fake_script)()
-local function CPNV_fake_script() -- noclip.LocalScript 
+coroutine.wrap(KIVLFC_fake_script)()
+local function GXZLLKC_fake_script() -- noclip.LocalScript 
 	local script = Instance.new('LocalScript', noclip)
 
 	local Players = game:GetService("Players")
@@ -646,8 +611,8 @@ local function CPNV_fake_script() -- noclip.LocalScript
 	
 	button.MouseButton1Click:Connect(toggleNoclip)
 end
-coroutine.wrap(CPNV_fake_script)()
-local function KYDS_fake_script() -- ESP.LocalScript 
+coroutine.wrap(GXZLLKC_fake_script)()
+local function LFVFGMF_fake_script() -- ESP.LocalScript 
 	local script = Instance.new('LocalScript', ESP)
 
 	local Players = game:GetService("Players")
@@ -714,8 +679,8 @@ local function KYDS_fake_script() -- ESP.LocalScript
 		end
 	end)
 end
-coroutine.wrap(KYDS_fake_script)()
-local function JERJJ_fake_script() -- speed.LocalScript 
+coroutine.wrap(LFVFGMF_fake_script)()
+local function ENXWFJC_fake_script() -- speed.LocalScript 
 	local script = Instance.new('LocalScript', speed)
 
 	local Players = game:GetService("Players")
@@ -773,8 +738,8 @@ local function JERJJ_fake_script() -- speed.LocalScript
 		end
 	end)
 end
-coroutine.wrap(JERJJ_fake_script)()
-local function ZJJAQRK_fake_script() -- SpinBot.LocalScript 
+coroutine.wrap(ENXWFJC_fake_script)()
+local function CBNPRPW_fake_script() -- SpinBot.LocalScript 
 	local script = Instance.new('LocalScript', SpinBot)
 
 	local Players = game:GetService("Players")
@@ -783,212 +748,159 @@ local function ZJJAQRK_fake_script() -- SpinBot.LocalScript
 	
 	local localPlayer = Players.LocalPlayer
 	local button = script.Parent
+	local active = false
 	
-	local spinActive = false
-	local spinConnection = nil
-	local gyro = nil
+	-- ⚙️ НАЛАШТУВАННЯ
+	local pushForce = 800
+	local attackRadius = 30
+	local spinSpeed = 10
 	
-	-- 🚀 НАЛАШТУВАННЯ МАКСИМАЛЬНОЇ СИЛИ:
-	local spinSpeed = 400   -- Швидкість обертання
-	local pushForce = 900   -- УЛЬТРА сила відкидання вперед/вбік
-	local upForce = 450     -- Сила запуску вгору (щоб відірвати від землі намертво)
+	-- Функція миттєвої зміни стилю
+	local function updateButtonStyle()
+		if active then
+			-- ЧЕРВОНИЙ ТА ПРОЗОРИЙ (Працює)
+			button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+			button.BackgroundTransparency = 0.3
+		else
+			-- СІРИЙ ТА ПРОЗОРИЙ (Вимкнено)
+			button.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+			button.BackgroundTransparency = 0.5
+		end
+	end
 	
 	button.Activated:Connect(function()
-		spinActive = not spinActive
+		active = not active
+		updateButtonStyle()
 	
-		if spinActive then
-			button.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Синя кнопка
+		if active then
+			local mainConnection
+			mainConnection = RunService.Heartbeat:Connect(function()
+				if not active then 
+					mainConnection:Disconnect()
+					return 
+				end
 	
-			local character = localPlayer.Character
-			local hrp = character and character:FindFirstChild("HumanoidRootPart")
-	
-			if hrp then
-				-- Залізобетонна стабілізація, щоб ти не падав
-				gyro = Instance.new("BodyGyro")
-				gyro.Name = "SpinStabilizer"
-				gyro.MaxTorque = Vector3.new(1e6, 0, 1e6)
-				gyro.CFrame = hrp.CFrame
-				gyro.Parent = hrp
-			end
-	
-			spinConnection = RunService.Heartbeat:Connect(function()
 				local char = localPlayer.Character
-				local currentHrp = char and char:FindFirstChild("HumanoidRootPart")
+				local hrp = char and char:FindFirstChild("HumanoidRootPart")
+				if not hrp then return end
 	
-				if currentHrp then
-					-- Крутимо наше тіло
-					currentHrp.AssemblyAngularVelocity = Vector3.new(0, spinSpeed, 0)
-					if gyro then gyro.CFrame = currentHrp.CFrame end
+				-- Плавне обертання
+				hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
 	
-					-- Перевіряємо об'єкти та людей навколо
-					for _, obj in pairs(Workspace:GetDescendants()) do
-						if obj:IsA("BasePart") and not obj:IsDescendantOf(char) and not obj.Anchored then
+				-- Відкидання всіх навколо
+				for _, obj in pairs(Workspace:GetChildren()) do
+					local targetHrp = nil
+					if obj:IsA("Model") and obj ~= char and obj:FindFirstChild("HumanoidRootPart") then
+						targetHrp = obj.HumanoidRootPart
+					elseif obj:IsA("BasePart") and not obj.Anchored and obj.Name ~= "HumanoidRootPart" then
+						targetHrp = obj
+					end
 	
-							local distance = (currentHrp.Position - obj.Position).Magnitude
-							if distance < 16 then -- Радіус ураження
-	
-								-- Розрахунок ураганного вектора
-								local pushDirection = (obj.Position - currentHrp.Position).Unit
-								local launchVelocity = (pushDirection * pushForce) + Vector3.new(0, upForce, 0)
-	
-								-- Застосовуємо швидкість безпосередньо до об'єкта
-								obj.AssemblyLinearVelocity = launchVelocity
-	
-								-- Додатковий пінок для деталей гравців, щоб обійти тертя
-								if obj.Name == "HumanoidRootPart" or obj.Parent:FindFirstChildOfClass("Humanoid") then
-									obj.Velocity = launchVelocity
-								end
-							end
+					if targetHrp then
+						local dist = (hrp.Position - targetHrp.Position).Magnitude
+						if dist < attackRadius then
+							local direction = (targetHrp.Position - hrp.Position).Unit
+							targetHrp.AssemblyLinearVelocity = (direction * pushForce) + Vector3.new(0, 200, 0)
 						end
 					end
 				end
 			end)
-		else
-			button.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Вимкнено
-	
-			if spinConnection then
-				spinConnection:Disconnect()
-				spinConnection = nil
-			end
-	
-			if gyro then
-				gyro:Destroy()
-				gyro = nil
-			end
-	
-			local character = localPlayer.Character
-			local hrp = character and character:FindFirstChild("HumanoidRootPart")
-			if hrp then
-				hrp.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-			end
 		end
 	end)
 	
-	-- Скидання при смерті
-	localPlayer.CharacterAdded:Connect(function()
-		spinActive = false
-		button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-		if gyro then gyro:Destroy() gyro = nil end
-		if spinConnection then
-			spinConnection:Disconnect()
-			spinConnection = nil
-		end
-	end)
+	-- Початковий стан
+	updateButtonStyle()
 end
-coroutine.wrap(ZJJAQRK_fake_script)()
-local function PMCM_fake_script() -- HatAura.LocalScript 
+coroutine.wrap(CBNPRPW_fake_script)()
+local function VSREXQ_fake_script() -- HatAura.LocalScript 
 	local script = Instance.new('LocalScript', HatAura)
 
 	local Players = game:GetService("Players")
 	local RunService = game:GetService("RunService")
 	local Workspace = game:GetService("Workspace")
+	
 	local localPlayer = Players.LocalPlayer
 	local button = script.Parent
-	local camera = Workspace.CurrentCamera
-	
 	local auraActive = false
 	local auroraConnection = nil
 	local spawnedSpheres = {}
 	
-	-- ⚙️ НАЛАШТУВАННЯ МЕГА-АУРИ:
-	local baseRadius = 8      -- Збільшений базовий радіус
-	local pulseRange = 6      -- МЕГА-ХВИЛЯ: кульки відлітають дуже далеко і приходять назад
-	local rotationSpeed = 3.5 -- Красива плавна швидкість обертання
-	local pulseSpeed = 2.0    -- Швидкість хвилі, щоб політ виглядав епічно
-	local numberOfSpheres = 16 -- Кількість кульок (8 синіх і 8 червоних)
+	-- ⚙️ НАЛАШТУВАННЯ "НЕОНОВОГО ШТОРМУ"
+	local baseRadius = 10
+	local pulseRange = 8
+	local rotationSpeed = 4.0
+	local pulseSpeed = 3.0
+	local numberOfSpheres = 32 -- БІЛЬШЕ КУЛЬОК
 	local angleOffset = 0
 	local pulseTime = 0
+	local lastColorChange = 0
 	
-	-- Функція для створення неонової КУЛЬКИ (чередування кольорів)
-	local function createNeonSphere(isRed)
+	-- Функція створення МАКСИМАЛЬНО ЯСКРАВОЇ кульки
+	local function createNeonSphere()
 		local part = Instance.new("Part")
 		part.Shape = Enum.PartType.Ball
-		part.Size = Vector3.new(1.4, 1.4, 1.4) -- Збільшений розмір, щоб було видно здалеку
-		part.Material = Enum.Material.Neon
-	
-		-- Розділяємо кольори
-		if isRed then
-			part.Color = Color3.fromRGB(255, 0, 50)   -- 🔴 Червоний
-		else
-			part.Color = Color3.fromRGB(0, 100, 255)  -- 🔵 Синій
-		end
-	
+		part.Size = Vector3.new(2, 2, 2) -- Збільшений розмір
+		part.Material = Enum.Material.Neon -- МАКСИМАЛЬНИЙ НЕОН
 		part.Anchored = true
 		part.CanCollide = false
-		part.Parent = camera 
+		part.Parent = Workspace 
 		return part
+	end
+	
+	local function getRandomColor()
+		return Color3.new(math.random(), math.random(), math.random())
 	end
 	
 	button.Activated:Connect(function()
 		auraActive = not auraActive
 	
+		-- Зміна стилю кнопки: червона і прозора, коли працює
 		if auraActive then
-			button.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Синя кнопка в меню (Увімкнено)
+			button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+			button.BackgroundTransparency = 0.3
+		else
+			button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+			button.BackgroundTransparency = 0.5
+		end
 	
-			-- 1. Створюємо синьо-червоні кульки через одну
+		if auraActive then
 			for i = 1, numberOfSpheres do
-				local isRed = (i % 2 == 0) -- Чередуємо колір
-				local sphere = createNeonSphere(isRed)
-				table.insert(spawnedSpheres, sphere)
+				table.insert(spawnedSpheres, createNeonSphere())
 			end
 	
-			-- 2. Запускаємо рух мега-хвиль
 			auroraConnection = RunService.Heartbeat:Connect(function()
 				local character = localPlayer.Character
 				local hrp = character and character:FindFirstChild("HumanoidRootPart")
+				local currentTime = tick()
 	
-				if hrp and #spawnedSpheres > 0 then
+				if hrp then
 					local deltaTime = task.wait()
-	
-					-- Оновлюємо обертання та пульсацію
 					angleOffset = angleOffset + (rotationSpeed * deltaTime)
 					pulseTime = pulseTime + (pulseSpeed * deltaTime)
-	
-					-- Математика мега-хвилі (відлітають далеко і приходять впритул)
 					local currentRadius = baseRadius + (math.sin(pulseTime) * pulseRange)
 	
+					local changeColors = (currentTime - lastColorChange) > 5
+					if changeColors then lastColorChange = currentTime end
+	
 					for index, sphere in pairs(spawnedSpheres) do
+						if changeColors then sphere.Color = getRandomColor() end
+	
 						local angle = angleOffset + (index * (math.pi * 2 / numberOfSpheres))
 						local offsetX = math.cos(angle) * currentRadius
 						local offsetZ = math.sin(angle) * currentRadius
-	
-						-- Тримаємо блоки чітко навколо твого торсу
-						sphere.CFrame = hrp.CFrame * CFrame.new(offsetX, 0.5, offsetZ)
+						sphere.CFrame = hrp.CFrame * CFrame.new(offsetX, 0, offsetZ)
 					end
 				end
 			end)
 		else
-			button.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Вимкнено
-	
-			-- Зупиняємо цикл
-			if auroraConnection then
-				auroraConnection:Disconnect()
-				auroraConnection = nil
-			end
-	
-			-- Повністю видаляємо сфери
-			for _, sphere in pairs(spawnedSpheres) do
-				if sphere then sphere:Destroy() end
-			end
+			if auroraConnection then auroraConnection:Disconnect() end
+			for _, sphere in pairs(spawnedSpheres) do if sphere then sphere:Destroy() end end
 			spawnedSpheres = {}
-			pulseTime = 0
-		end
-	end)
-	
-	-- Очищення при респавні
-	localPlayer.CharacterAdded:Connect(function()
-		if not auraActive then
-			button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-			for _, sphere in pairs(spawnedSpheres) do
-				if sphere then sphere:Destroy() end
-			end
-			spawnedSpheres = {}
-			pulseTime = 0
 		end
 	end)
 end
-coroutine.wrap(PMCM_fake_script)()
-local function EGPCJO_fake_script() -- osnovnoi.DragScript 
+coroutine.wrap(VSREXQ_fake_script)()
+local function EDXIRNZ_fake_script() -- osnovnoi.DragScript 
 	local script = Instance.new('LocalScript', osnovnoi)
 
 	local UserInputService = game:GetService("UserInputService")
@@ -1123,72 +1035,46 @@ local function EGPCJO_fake_script() -- osnovnoi.DragScript
 		end
 	end)
 end
-coroutine.wrap(EGPCJO_fake_script)()
-local function NUCQA_fake_script() -- script.LocalScript 
+coroutine.wrap(EDXIRNZ_fake_script)()
+local function GWUFGJ_fake_script() -- script.LocalScript 
 	local script = Instance.new('LocalScript', script)
 
 	local TweenService = game:GetService("TweenService")
-	
 	local button = script.Parent 
+	-- Використовуємо FindFirstChild, щоб скрипт не "вмирав", якщо об'єкта немає
 	local frameOsnovnoi = button.Parent 
 	local ryzenAdmin = frameOsnovnoi.Parent 
+	local frameToOpen = ryzenAdmin:FindFirstChild("AdminFrame") 
 	
-	-- Находим фрейм
-	local frameToOpen = ryzenAdmin:WaitForChild("AdminFrame") 
-	
-	-- Настройки плавности (0.3 секунды)
-	local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-	
-	-- Переменная, которая запоминает, открыто ли окно (false = закрыто)
+	local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Linear)
 	local isOpen = false 
 	
-	local function onButtonClick()
-		if not isOpen then
-			-- === КОД ДЛЯ ОТКРЫТИЯ ===
-			isOpen = true
+	if not frameToOpen then
+		warn("ПОМИЛКА: Не знайдено AdminFrame! Перевір назву у вікні Explorer.")
+	end
+	
+	local function toggleFrame()
+		if not frameToOpen then return end
+	
+		isOpen = not isOpen
+	
+		if isOpen then
 			frameToOpen.Visible = true
-	
-			-- Проявляем фон фрейма
-			TweenService:Create(frameToOpen, tweenInfo, {BackgroundTransparency = 0}):Play()
-	
-			-- Проявляем всё, что внутри фрейма
-			for _, child in pairs(frameToOpen:GetDescendants()) do
-				if child:IsA("ImageLabel") or child:IsA("ImageButton") then
-					TweenService:Create(child, tweenInfo, {ImageTransparency = 0}):Play()
-				elseif child:IsA("TextLabel") or child:IsA("TextButton") then
-					TweenService:Create(child, tweenInfo, {TextTransparency = 0}):Play()
-				end
-			end
+			frameToOpen.BackgroundTransparency = 1
+			TweenService:Create(frameToOpen, tweenInfo, {BackgroundTransparency = 0.8}):Play()
 		else
-			-- === КОД ДЛЯ ЗАКРЫТИЯ ===
-			isOpen = false
-	
-			-- Делаем прозрачным фон фрейма
 			local hideTween = TweenService:Create(frameToOpen, tweenInfo, {BackgroundTransparency = 1})
 			hideTween:Play()
-	
-			-- Делаем прозрачным всё, что внутри фрейма
-			for _, child in pairs(frameToOpen:GetDescendants()) do
-				if child:IsA("ImageLabel") or child:IsA("ImageButton") then
-					TweenService:Create(child, tweenInfo, {ImageTransparency = 1}):Play()
-				elseif child:IsA("TextLabel") or child:IsA("TextButton") then
-					TweenService:Create(child, tweenInfo, {TextTransparency = 1}):Play()
-				end
-			end
-	
-			-- Полностью выключаем Visible только ПОСЛЕ того, как анимация исчезновения закончится
 			hideTween.Completed:Connect(function()
-				if not isOpen then -- Дополнительная проверка, чтобы не выключить случайно, если быстро нажали опять
-					frameToOpen.Visible = false
-				end
+				if not isOpen then frameToOpen.Visible = false end
 			end)
 		end
 	end
 	
-	button.MouseButton1Click:Connect(onButtonClick)
+	button.MouseButton1Click:Connect(toggleFrame)
 end
-coroutine.wrap(NUCQA_fake_script)()
-local function IGGFFHC_fake_script() -- name.name 
+coroutine.wrap(GWUFGJ_fake_script)()
+local function RUZZ_fake_script() -- name.name 
 	local script = Instance.new('LocalScript', name)
 
 	local TweenService = game:GetService("TweenService")
@@ -1227,8 +1113,8 @@ local function IGGFFHC_fake_script() -- name.name
 	local fadeInNickname = TweenService:Create(textLabel, tweenInfo, {TextTransparency = 0})
 	fadeInNickname:Play()
 end
-coroutine.wrap(IGGFFHC_fake_script)()
-local function LDOGATW_fake_script() -- SettingsFrame.setemd 
+coroutine.wrap(RUZZ_fake_script)()
+local function SUTLPNL_fake_script() -- SettingsFrame.setemd 
 	local script = Instance.new('LocalScript', SettingsFrame)
 
 	local TweenService = game:GetService("TweenService")
@@ -1266,8 +1152,8 @@ local function LDOGATW_fake_script() -- SettingsFrame.setemd
 		end
 	end)
 end
-coroutine.wrap(LDOGATW_fake_script)()
-local function CUREZF_fake_script() -- fps.LocalScript 
+coroutine.wrap(SUTLPNL_fake_script)()
+local function EXIZP_fake_script() -- fps.LocalScript 
 	local script = Instance.new('LocalScript', fps)
 
 	local RunService = game:GetService("RunService")
@@ -1308,8 +1194,8 @@ local function CUREZF_fake_script() -- fps.LocalScript
 		end
 	end)
 end
-coroutine.wrap(CUREZF_fake_script)()
-local function TMMRYUR_fake_script() -- ping.LocalScript 
+coroutine.wrap(EXIZP_fake_script)()
+local function ASOCOC_fake_script() -- ping.LocalScript 
 	local script = Instance.new('LocalScript', ping)
 
 	local Players = game:GetService("Players")
@@ -1350,80 +1236,71 @@ local function TMMRYUR_fake_script() -- ping.LocalScript
 		end
 	end)
 end
-coroutine.wrap(TMMRYUR_fake_script)()
-local function VFUI_fake_script() -- scriptgame.LocalScript 
+coroutine.wrap(ASOCOC_fake_script)()
+local function TQOXLWO_fake_script() -- scriptgame.LocalScript 
 	local script = Instance.new('LocalScript', scriptgame)
 
 	local TweenService = game:GetService("TweenService")
+	local Players = game:GetService("Players")
+	
 	local button = script.Parent
+	local player = Players.LocalPlayer
 	
-	-- 🎯 Знаходимо все через PlayerGui з обов'язковим очікуванням (для телефонів)
-	local player = game.Players.LocalPlayer
-	local playerGui = player:WaitForChild("PlayerGui", 10) -- Чекаємо до 10 секунд
-	local ryzenAdmin = playerGui:WaitForChild("RYZEN ADMIN", 10)
+	-- Виносимо пошук у функцію, щоб вона чекала, доки все з'явиться
+	local function getUIElements()
+		local playerGui = player:WaitForChild("PlayerGui", 20)
+		local ryzenAdmin = playerGui:WaitForChild("RYZEN ADMIN", 20)
+		local hubFrame = ryzenAdmin:WaitForChild("script game hub", 20)
+		local scrollingFrame = hubFrame:WaitForChild("ScrollingFrame", 20)
+		return hubFrame, scrollingFrame
+	end
 	
-	-- Шукаємо вікно та скролл. На мобілках використовуємо WaitForChild, щоб скрипт не впав через довге завантаження
-	local hubFrame = ryzenAdmin:WaitForChild("script game hub", 10)
-	local scrollingFrame = hubFrame and hubFrame:WaitForChild("ScrollingFrame", 5)
-	
+	local hubFrame, scrollingFrame = getUIElements()
 	local isOpen = false
 	local isTweening = false
 	
-	local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-	
-	-- Запам'ятовуємо початкові розміри
-	local hubOriginalSize = hubFrame and hubFrame.Size or UDim2.new(0, 500, 0, 250)
-	local scrollOriginalSize = scrollingFrame and scrollingFrame.Size or UDim2.new(1, 0, 1, 0)
-	
+	local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+	local hubOriginalSize = UDim2.new(0, 500, 0, 250) -- Якщо не знайшло, постав тут свої цифри
+	local scrollOriginalSize = UDim2.new(1, 0, 1, 0)
 	local closedSize = UDim2.new(0, 0, 0, 0)
 	
-	-- На старті ховаємо все
-	if hubFrame then 
-		hubFrame.Visible = false 
-	end
+	-- На старті ховаємо
+	if hubFrame then hubFrame.Visible = false end
 	
-	-- 📱 Функція натискання, повністю оптимізована під сенсор смартфонів
-	local function onActivated()
-		if not hubFrame or not scrollingFrame or isTweening then return end
+	button.Activated:Connect(function()
+		if isTweening then return end
+	
+		-- Перезавантажуємо посилання, якщо раптом вони зникли
+		if not hubFrame then hubFrame, scrollingFrame = getUIElements() end
+	
 		isTweening = true
 	
 		if not isOpen then
-			-- 🚀 ВІДКРИТТЯ
 			hubFrame.Size = closedSize
 			scrollingFrame.Size = closedSize
 			hubFrame.Visible = true
 	
-			local hubTween = TweenService:Create(hubFrame, tweenInfo, {Size = hubOriginalSize})
-			local scrollTween = TweenService:Create(scrollingFrame, tweenInfo, {Size = scrollOriginalSize})
-	
-			hubTween:Play()
-			scrollTween:Play()
-	
-			hubTween.Completed:Connect(function()
+			TweenService:Create(hubFrame, tweenInfo, {Size = hubOriginalSize}):Play()
+			local t = TweenService:Create(scrollingFrame, tweenInfo, {Size = scrollOriginalSize})
+			t:Play()
+			t.Completed:Connect(function() 
 				isOpen = true
-				isTweening = false
+				isTweening = false 
 			end)
 		else
-			-- 🎯 ЗАКРИТТЯ
-			local hubTween = TweenService:Create(hubFrame, tweenInfo, {Size = closedSize})
-			local scrollTween = TweenService:Create(scrollingFrame, tweenInfo, {Size = closedSize})
-	
-			hubTween:Play()
-			scrollTween:Play()
-	
-			hubTween.Completed:Connect(function()
+			local t = TweenService:Create(hubFrame, tweenInfo, {Size = closedSize})
+			TweenService:Create(scrollingFrame, tweenInfo, {Size = closedSize}):Play()
+			t:Play()
+			t.Completed:Connect(function()
 				hubFrame.Visible = false
 				isOpen = false
 				isTweening = false
 			end)
 		end
-	end
-	
-	-- 🔥 Activated працює на телефонах у 100 разів краще і стабільніше за MouseButton1Click
-	button.Activated:Connect(onActivated)
+	end)
 end
-coroutine.wrap(VFUI_fake_script)()
-local function JAXUEVN_fake_script() -- teg.LocalScript 
+coroutine.wrap(TQOXLWO_fake_script)()
+local function PAIC_fake_script() -- teg.LocalScript 
 	local script = Instance.new('LocalScript', teg)
 
 	local Players = game:GetService("Players")
@@ -1585,8 +1462,8 @@ local function JAXUEVN_fake_script() -- teg.LocalScript
 		end
 	end)
 end
-coroutine.wrap(JAXUEVN_fake_script)()
-local function HYJAZLG_fake_script() -- OrbitWheelFly.LocalScript 
+coroutine.wrap(PAIC_fake_script)()
+local function AHTU_fake_script() -- OrbitWheelFly.LocalScript 
 	local script = Instance.new('LocalScript', OrbitWheelFly)
 
 	local Players = game:GetService("Players")
@@ -1768,4 +1645,4 @@ local function HYJAZLG_fake_script() -- OrbitWheelFly.LocalScript
 		studioTestParts = {}
 	end)
 end
-coroutine.wrap(HYJAZLG_fake_script)()
+coroutine.wrap(AHTU_fake_script)()
