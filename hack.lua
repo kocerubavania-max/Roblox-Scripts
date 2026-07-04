@@ -1,8 +1,3 @@
-- Gui to Lua
--- Version: 3.2
-
--- Instances:
-
 local RYZENADMIN = Instance.new("ScreenGui")
 local AdminFrame = Instance.new("Frame")
 local ScrollingFrame = Instance.new("ScrollingFrame")
